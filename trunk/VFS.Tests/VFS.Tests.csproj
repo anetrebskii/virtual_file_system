@@ -31,6 +31,10 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="FluentAssertions, Version=1.3.0.1, Culture=neutral, PublicKeyToken=33f2691a05b67b6a, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\Lib\FluentAssertions.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.VisualStudio.QualityTools.UnitTestFramework, Version=9.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
     <Reference Include="System" />
     <Reference Include="System.Core">
@@ -42,16 +46,12 @@
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Server\Core\CommandHelper.cs" />
-    <Compile Include="Server\Core\Commands\CDCommandTest.cs" />
-    <Compile Include="Server\Core\Commands\COPYCommandTest.cs" />
-    <Compile Include="Server\Core\Commands\MOVECommandTest.cs" />
-    <Compile Include="Server\Core\Commands\UNLOCKCommandTest.cs" />
-    <Compile Include="Server\Core\Commands\LOCKCommandTest.cs" />
-    <Compile Include="Server\Core\Commands\DELCommandTest.cs" />
-    <Compile Include="Server\Core\Commands\MFCommandTest.cs" />
-    <Compile Include="Server\Core\Commands\DelTreeCommandTest.cs" />
-    <Compile Include="Server\Core\Commands\RDCommandTest.cs" />
-    <Compile Include="Server\Core\Commands\MDCommandTest.cs" />
+    <Compile Include="Server\Core\FS\PrintResults.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>PrintResults.resx</DependentUpon>
+    </Compile>
+    <Compile Include="Server\Core\FS\VFSEngineTest.cs" />
     <Compile Include="Server\Core\FS\VFSManagerTest.cs" />
     <Compile Include="Server\Core\FS\VFSDirectoryTest.cs" />
   </ItemGroup>
@@ -63,6 +63,12 @@
       <Project>{2D95CA9A-CE82-4949-A373-70E66E9D9FD9}</Project>
       <Name>VFS.Server.Core</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Server\Core\FS\PrintResults.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>PrintResults.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

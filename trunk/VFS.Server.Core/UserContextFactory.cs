@@ -11,11 +11,11 @@ namespace VFS.Server.Core
     sealed class UserContextFactory
     {
         private IDirectory _rootDirectory;
-        private IFSManager _fsFactory;
+        private VFSEngine _fsFactory;
 
         public UserContextFactory()
         {
-            _fsFactory = new VFSManager();
+            _fsFactory = new VFSEngine();
             _rootDirectory = _fsFactory.CreateDirectory(@"c:\");
         }
 

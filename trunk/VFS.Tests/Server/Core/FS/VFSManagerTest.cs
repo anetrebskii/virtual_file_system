@@ -5,6 +5,7 @@ using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using VFS.Server.Core.FS.Impl;
 using VFS.Server.Core.FS;
+using VFS.Server.Core.Exceptions;
 
 namespace VFS.Tests.Server.Core.FS
 {
@@ -14,7 +15,7 @@ namespace VFS.Tests.Server.Core.FS
     [TestClass]
     public class VFSManagerTest
     {
-        private VFSManager _vfsManager;
+        private VFSEngine _vfsManager;
         private IDirectory _rootDirectory;
 
         private TestContext testContextInstance;
@@ -38,7 +39,7 @@ namespace VFS.Tests.Server.Core.FS
         [TestInitialize()]
         public void MyTestInitialize()
         {
-            _vfsManager = new VFSManager();
+            _vfsManager = new VFSEngine();
 
             _rootDirectory = _vfsManager.CreateDirectory("c:");
             IDirectory child1 = _vfsManager.CreateDirectory("child1");
@@ -78,7 +79,7 @@ namespace VFS.Tests.Server.Core.FS
         }
 
         [TestMethod]
-        [ExpectedException(typeof(DirectoryAlreadyExistsException))]
+        [ExpectedException(typeof(FSException))]
         public void AddDirectory_WhichAlreadyExists()
         {
             VFSDirectory parent = new VFSDirectory();

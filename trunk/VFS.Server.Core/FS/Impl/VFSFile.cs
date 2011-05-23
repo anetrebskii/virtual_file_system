@@ -5,9 +5,15 @@ using System.Text;
 
 namespace VFS.Server.Core.FS.Impl
 {
+    /// <summary>
+    /// Represent file of a virtual file system
+    /// </summary>
     [Serializable]
     sealed class VFSFile : IFile
     {
+        /// <summary>
+        /// Initialize new instance of class <see cref="VFSFile"/>
+        /// </summary>
         public VFSFile()
         {
             LockedUsers = new List<string>();
@@ -15,23 +21,28 @@ namespace VFS.Server.Core.FS.Impl
 
         #region IFile Members
 
+        /// <summary>
+        /// Name of the current file
+        /// </summary>
         public string Name
         {
             get;
             set;
         }
 
-        public List<string> LockedUsers { get; private set; }
-
-        #endregion
-
-        #region IFile Members
-
+        /// <summary>
+        /// Parent directory of the current file
+        /// </summary>
         public IDirectory Directory
         {
             get;
             set;
         }
+
+        /// <summary>
+        /// Users, who lock current file
+        /// </summary>
+        public List<string> LockedUsers { get; private set; }
 
         #endregion
     }

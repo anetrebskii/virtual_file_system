@@ -5,6 +5,7 @@ using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using VFS.Server.Core.FS.Impl;
 using VFS.Server.Core.FS;
+using VFS.Server.Core.Exceptions;
 
 namespace VFS.Tests.Server.Core.FS
 {
@@ -52,7 +53,7 @@ namespace VFS.Tests.Server.Core.FS
         }
 
         [TestMethod]
-        [ExpectedException(typeof(DirectoryAlreadyExistsException))]
+        [ExpectedException(typeof(FSException))]
         public void AddDirectory_WhichAlreadyExists()
         {
             VFSDirectory parent = new VFSDirectory();

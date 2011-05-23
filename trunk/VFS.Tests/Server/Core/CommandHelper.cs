@@ -10,7 +10,7 @@ namespace VFS.Tests.Server.Core
 {
     sealed class CommandHelper
     {
-        private static IFSManager _fsFactory = new VFSManager();
+        private static VFSEngine _fsFactory = new VFSEngine();
 
         public static CommandContext CreateCommandContext()
         {
@@ -19,7 +19,7 @@ namespace VFS.Tests.Server.Core
             return returnValue;
         }
 
-        public static IFSManager GetFSManager()
+        public static VFSEngine GetFSManager()
         {
             return _fsFactory;
         }
