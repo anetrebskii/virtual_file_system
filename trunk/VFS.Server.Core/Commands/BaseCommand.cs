@@ -20,5 +20,10 @@ namespace VFS.Server.Core.Commands
         {
             return args != null && args.Length > 0;
         }
+
+        protected static bool hasTwoParameters(string[] args)
+        {
+            return args != null && args.Length > 1;
+        }
     }
 }

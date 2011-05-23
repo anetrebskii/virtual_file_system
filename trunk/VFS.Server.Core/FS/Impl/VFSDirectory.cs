@@ -5,6 +5,7 @@ using System.Text;
 
 namespace VFS.Server.Core.FS.Impl
 {
+    [Serializable]
     sealed class VFSDirectory : IDirectory
     {
         private List<VFSDirectory> _directories = new List<VFSDirectory>();
@@ -47,11 +48,13 @@ namespace VFS.Server.Core.FS.Impl
 
         public void AddFile(IFile file)
         {
+            file.Directory = this;
             _files.Add(file);
         }
 
         public void RemoveFile(IFile file)
         {
+            file.Directory = null;
             _files.Remove(file);
         }
 

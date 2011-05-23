@@ -20,6 +20,18 @@ namespace VFS.Server.Core.FS.Impl
             return path.Remove(path.LastIndexOf('\\'));
         }
 
+        public IFile FindFile(string filePath, IDirectory currentDirectory)
+        {
+            if (IsAbsolutePath(filePath))
+            {
+                return findFileInDirectory(removeRootPath(filePath), currentDirectory.Root);
+            }
+            else
+            {
+                return findFileInDirectory(filePath, currentDirectory);
+            }
+        }
+
         public IDirectory FindDirectory(string directoryPath, IDirectory currentDirectory)
         {
             if (IsAbsolutePath(directoryPath))
@@ -34,7 +46,7 @@ namespace VFS.Server.Core.FS.Impl
 
         public IFile CreateFile(string fileName)
         {
-            throw new NotImplementedException();
+            return new VFSFile() { Name = fileName };
         }
 
         public IDirectory CreateDirectory(string directoryName)
@@ -52,6 +64,33 @@ namespace VFS.Server.Core.FS.Impl
         private string removeRootPath(string path)
         {
             return RemoveOddSymbols(path.Replace(Path.GetPathRoot(path), String.Empty));
+        }
+
+        /// <summary>
+        /// Find directory by path in current directory <paramref name="place"/>
+        /// </summary>
+        /// <param name="path">Path to directory</param>
+        /// <param name="place">Place to searching</param>
+        /// <returns><c>null</c> - if directory not finded</returns>
+        private IFile findFileInDirectory(string path, IDirectory place)
+        {
+            string[] directoryNames = splitPath(path);
+            foreach (string directoryName in directoryNames.Take(directoryNames.Length - 2))
+            {
+                IDirectory findedDirectory = place.GetDirectories().FirstOrDefault(d =>
+                    String.Compare(d.Name, directoryName, StringComparison.OrdinalIgnoreCase) == 0);
+                if (findedDirectory == null)
+                {
+                    return null;
+                }
+                place = findedDirectory;
+            }
+            if (place != null)
+            {
+                return place.GetFiles().FirstOrDefault(f =>
+                    String.Compare(f.Name, directoryNames[directoryNames.Length - 1], StringComparison.OrdinalIgnoreCase) == 0);
+            }
+            return null;
         }
 
         /// <summary>

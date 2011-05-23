@@ -9,6 +9,7 @@ namespace VFS.Server.Core.FS.Impl
     {
         string UpPath(string path);
         bool IsAbsolutePath(string path);
+        IFile FindFile(string filePath, IDirectory currentDirectory);
         IDirectory FindDirectory(string directoryPath, IDirectory currentDirectory);
 
         IFile CreateFile(string fileName);

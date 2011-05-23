@@ -7,9 +7,9 @@ namespace VFS.Server.Core.FS
 {
     interface IFile
     {
+        IDirectory Directory { get; set; }
         string Name { get; set; }
 
-        void Lock();
-        void Unlock();
+        List<string> LockedUsers { get; }
     }
 }

@@ -43,6 +43,12 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Server\Core\CommandHelper.cs" />
     <Compile Include="Server\Core\Commands\CDCommandTest.cs" />
+    <Compile Include="Server\Core\Commands\COPYCommandTest.cs" />
+    <Compile Include="Server\Core\Commands\MOVECommandTest.cs" />
+    <Compile Include="Server\Core\Commands\UNLOCKCommandTest.cs" />
+    <Compile Include="Server\Core\Commands\LOCKCommandTest.cs" />
+    <Compile Include="Server\Core\Commands\DELCommandTest.cs" />
+    <Compile Include="Server\Core\Commands\MFCommandTest.cs" />
     <Compile Include="Server\Core\Commands\DelTreeCommandTest.cs" />
     <Compile Include="Server\Core\Commands\RDCommandTest.cs" />
     <Compile Include="Server\Core\Commands\MDCommandTest.cs" />
