@@ -45,8 +45,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AuthenticationManager.cs" />
     <Compile Include="Commands\UserContext.cs" />
     <Compile Include="Commands\CommandContext.cs" />
+    <Compile Include="CommonContext.cs" />
     <Compile Include="Exceptions\FSException.cs" />
     <Compile Include="ExtenstionMethods.cs" />
     <Compile Include="FS\IDirectory.cs" />

@@ -5,6 +5,7 @@ using System.Text;
 using VFS.Server.Core.Commands;
 using VFS.Server.Core.FS;
 using VFS.Server.Core.FS.Impl;
+using VFS.Server.Core;
 
 namespace VFS.Tests.Server.Core
 {
@@ -14,7 +15,9 @@ namespace VFS.Tests.Server.Core
 
         public static CommandContext CreateCommandContext()
         {
-            CommandContext returnValue = new CommandContext(new UserContext("name"));
+            UserContext currentUser = new UserContext("name");
+            CommonContext common = new CommonContext(new List<UserContext>() { currentUser });
+            CommandContext returnValue = new CommandContext(currentUser, common);
             returnValue.User.CurrentDirectory = GetFSManager().CreateDirectory(@"C:");
             return returnValue;
         }

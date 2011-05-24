@@ -263,7 +263,7 @@ namespace VFS.Server.Core.FS.Impl
 
         public void Print(CommandContext context)
         {
-            context.Answer = toStringFormat(context.User.CurrentDirectory.Root, 0);
+            context.Response = toStringFormat(context.User.CurrentDirectory.Root, 0);
         }
 
         private string toStringFormat(IDirectory rootDirectory, int deepLevel)

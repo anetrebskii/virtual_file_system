@@ -10,7 +10,7 @@ using VFS.Server.Core.Exceptions;
 namespace VFS.Server.Core
 {
     sealed class ServerConsole
-    {
+    { 
         private IFSEngine _engine;
         private Dictionary<string, Action<CommandContext>> _commands = new Dictionary<string, Action<CommandContext>>();
 
@@ -41,13 +41,14 @@ namespace VFS.Server.Core
             string[] commandItems = textCommand.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
             string commandName = commandItems[0].ToUpper();
 
-            CommandContext commandContext = new CommandContext(user);
-            commandContext.Args = commandItems.Skip(1).ToArray();
-
+            CommandContext commandContext = new CommandContext(user, null)
+            {
+                Args = commandItems.Skip(1).ToArray()
+            };
             try
             {
                 _commands[commandName].Invoke(commandContext);
-                return commandContext.Answer;
+                return commandContext.Response;
             }
             catch (FSException ex)
             {

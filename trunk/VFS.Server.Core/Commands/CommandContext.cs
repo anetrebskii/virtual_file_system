@@ -24,7 +24,12 @@ namespace VFS.Server.Core.Commands
         /// <summary>
         /// Answer from system to user
         /// </summary>
-        public string Answer { get; set; }
+        public string Response { get; set; }
+
+        /// <summary>
+        /// Keep common information
+        /// </summary>
+        public CommonContext Common { get; private set; }
 
         /// <summary>
         /// Initialize new instance of class <see cref="CommandContext"/>
@@ -32,13 +37,18 @@ namespace VFS.Server.Core.Commands
         /// <param name="user">User, who execute command</param>
         /// 
         /// <exception cref="ArgumentNullException">if <paramref name="user"/> is null</exception>
-        public CommandContext(UserContext user)
+        public CommandContext(UserContext user, CommonContext common)
         {
             if (user == null)
             {
                 throw new ArgumentNullException("user");
             }
+            if (common == null)
+            {
+                throw new ArgumentNullException("common");
+            }
             User = user;
+            Common = common;
         }
     }
 }

@@ -449,7 +449,7 @@ namespace VFS.Tests.Server.Core.FS
             _engine.Print(_context);
 
             // Assert
-            Assert.AreEqual(PrintResults.ExpectedResult, _context.Answer);
+            Assert.AreEqual(PrintResults.ExpectedResult, _context.Response);
         }
 
         #endregion
