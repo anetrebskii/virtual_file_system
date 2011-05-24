@@ -10,7 +10,7 @@ namespace VFS.Server.Core.FS
     /// <summary>
     /// Interface for file system engine
     /// </summary>
-    interface IFSEngine
+    public interface IFSEngine
     {
         /// <summary>
         /// Create new directory in file system

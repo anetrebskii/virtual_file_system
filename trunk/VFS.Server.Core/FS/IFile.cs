@@ -8,7 +8,7 @@ namespace VFS.Server.Core.FS
     /// <summary>
     /// Interface for file
     /// </summary>
-    interface IFile
+    public interface IFile
     {
         /// <summary>
         /// Parent directory of the current file

@@ -9,7 +9,7 @@ namespace VFS.Server.Core.Commands
     /// <summary>
     /// User context
     /// </summary>
-    sealed class UserContext
+    public sealed class UserContext
     {
         /// <summary>
         /// User name

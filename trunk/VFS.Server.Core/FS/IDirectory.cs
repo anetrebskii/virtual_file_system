@@ -8,7 +8,7 @@ namespace VFS.Server.Core.FS
     /// <summary>
     /// Interface for directory
     /// </summary>
-    interface IDirectory
+    public interface IDirectory
     {
         /// <summary>
         /// Parent directory

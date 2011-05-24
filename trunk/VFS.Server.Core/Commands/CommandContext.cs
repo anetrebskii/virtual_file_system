@@ -9,7 +9,7 @@ namespace VFS.Server.Core.Commands
     /// <summary>
     /// Context for execute user command
     /// </summary>
-    sealed class CommandContext
+    public sealed class CommandContext
     {
         /// <summary>
         /// Arguments for commands
