@@ -11,6 +11,12 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		VFS.vsmdi = VFS.vsmdi
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VFS.Server.Console", "VFS.Server.Console\VFS.Server.Console.csproj", "{00091A3F-1086-4567-9FB3-9431926775A7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VFS.Contract", "VFS.Contract\VFS.Contract.csproj", "{D5351D28-1933-4787-ADDC-B8968300833E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VFS.Client", "VFS.Client\VFS.Client.csproj", "{B0A944FA-0371-4676-8C0E-83C515A36428}"
+EndProject
 Global
 	GlobalSection(TestCaseManagementSettings) = postSolution
 		CategoryFile = VFS.vsmdi
@@ -28,6 +34,18 @@ Global
 		{A7195A90-D728-43A2-9030-06BB9AA7A552}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A7195A90-D728-43A2-9030-06BB9AA7A552}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A7195A90-D728-43A2-9030-06BB9AA7A552}.Release|Any CPU.Build.0 = Release|Any CPU
+		{00091A3F-1086-4567-9FB3-9431926775A7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{00091A3F-1086-4567-9FB3-9431926775A7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{00091A3F-1086-4567-9FB3-9431926775A7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{00091A3F-1086-4567-9FB3-9431926775A7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D5351D28-1933-4787-ADDC-B8968300833E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D5351D28-1933-4787-ADDC-B8968300833E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D5351D28-1933-4787-ADDC-B8968300833E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D5351D28-1933-4787-ADDC-B8968300833E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B0A944FA-0371-4676-8C0E-83C515A36428}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B0A944FA-0371-4676-8C0E-83C515A36428}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B0A944FA-0371-4676-8C0E-83C515A36428}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B0A944FA-0371-4676-8C0E-83C515A36428}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
