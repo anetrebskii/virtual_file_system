@@ -13,6 +13,11 @@ namespace VFS.Server.Core.FS
     public interface IFSEngine
     {
         /// <summary>
+        /// Return default directory
+        /// </summary>
+        IDirectory GetDefaultDirectory();
+
+        /// <summary>
         /// Create new directory in file system
         /// </summary>
         /// <param name="context">context for command</param>

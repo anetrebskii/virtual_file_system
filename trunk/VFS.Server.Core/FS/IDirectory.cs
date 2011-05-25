@@ -26,6 +26,11 @@ namespace VFS.Server.Core.FS
         string Name { get; set; }
 
         /// <summary>
+        /// Represent full path to directory
+        /// </summary>
+        string FullPath { get; }
+
+        /// <summary>
         /// Return child directories <see cref="IDirectory"/>
         /// </summary>
         IEnumerable<IDirectory> GetDirectories();

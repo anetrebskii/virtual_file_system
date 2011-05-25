@@ -60,6 +60,24 @@ namespace VFS.Server.Core.FS.Impl
         }
 
         /// <summary>
+        /// Represent full path to directory
+        /// </summary>
+        /// <remarks>
+        /// User recursive call to present the full path
+        /// </remarks>
+        public string FullPath
+        {
+            get
+            {
+                if (Parent == null)
+                {
+                    return Name;
+                }
+                return String.Format("{0}{1}{2}", Parent.FullPath, VFSEngine.SEPARATOR, Name);
+            }
+        }               
+
+        /// <summary>
         /// Return child directories <see cref="IDirectory"/>
         /// </summary>
         public IEnumerable<IDirectory> GetDirectories()

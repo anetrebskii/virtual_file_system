@@ -9,7 +9,7 @@ using VFS.Server.Core.Exceptions;
 
 namespace VFS.Server.Core
 {
-    sealed class ServerConsole
+    public sealed class ServerConsole
     { 
         private IFSEngine _engine;
         private Dictionary<string, Action<CommandContext>> _commands = new Dictionary<string, Action<CommandContext>>();
@@ -36,12 +36,25 @@ namespace VFS.Server.Core
             _commands.Add("PRINT", engine.Print);
         }
 
-        public string InputCommand(string textCommand, UserContext user)
+        public UserContext Authenticate(string userName)
         {
+            return new UserContext(userName)
+            {
+                CurrentDirectory = _engine.GetDefaultDirectory()
+            };
+        }
+
+        public string InputCommand(string textCommand, UserContext user, IEnumerable<UserContext> otherUsers)
+        {
+            if (textCommand == null || textCommand.Trim() == String.Empty)
+            {
+                return user.CurrentDirectory.FullPath + "> ";
+            }
+
             string[] commandItems = textCommand.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
             string commandName = commandItems[0].ToUpper();
 
-            CommandContext commandContext = new CommandContext(user, null)
+            CommandContext commandContext = new CommandContext(user, otherUsers)
             {
                 Args = commandItems.Skip(1).ToArray()
             };

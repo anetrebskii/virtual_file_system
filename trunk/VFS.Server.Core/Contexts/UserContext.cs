@@ -19,7 +19,7 @@ namespace VFS.Server.Core.Commands
         /// <summary>
         /// Direcory, where user
         /// </summary>
-        public IDirectory CurrentDirectory { get; set; }
+        public IDirectory CurrentDirectory { get; internal set; }
 
         /// <summary>
         /// Initialize new instance of class <see cref="UserContext"/>

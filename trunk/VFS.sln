@@ -13,7 +13,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VFS.Server.Console", "VFS.Server.Console\VFS.Server.Console.csproj", "{00091A3F-1086-4567-9FB3-9431926775A7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VFS.Contract", "VFS.Contract\VFS.Contract.csproj", "{D5351D28-1933-4787-ADDC-B8968300833E}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VFS.Common", "VFS.Contract\VFS.Common.csproj", "{D5351D28-1933-4787-ADDC-B8968300833E}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VFS.Client", "VFS.Client\VFS.Client.csproj", "{B0A944FA-0371-4676-8C0E-83C515A36428}"
 EndProject

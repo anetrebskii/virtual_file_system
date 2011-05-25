@@ -21,6 +21,11 @@ namespace VFS.Server.Core.FS
         string Name { get; set; }
 
         /// <summary>
+        /// Represent full path to file
+        /// </summary>
+        string FullPath { get; }
+
+        /// <summary>
         /// Users, who lock current file
         /// </summary>
         List<string> LockedUsers { get; }

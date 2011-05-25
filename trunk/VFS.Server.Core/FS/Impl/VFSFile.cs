@@ -31,6 +31,20 @@ namespace VFS.Server.Core.FS.Impl
         }
 
         /// <summary>
+        /// Represent full path to directory
+        /// </summary>
+        /// <remarks>
+        /// User recursive call to present the full path
+        /// </remarks>
+        public string FullPath
+        {
+            get
+            {
+                return String.Format("{0}{1}{2}", Directory.FullPath, VFSEngine.SEPARATOR, Name);
+            }
+        }
+
+        /// <summary>
         /// Parent directory of the current file
         /// </summary>
         public IDirectory Directory

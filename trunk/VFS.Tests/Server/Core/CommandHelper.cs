@@ -16,8 +16,7 @@ namespace VFS.Tests.Server.Core
         public static CommandContext CreateCommandContext()
         {
             UserContext currentUser = new UserContext("name");
-            CommonContext common = new CommonContext(new List<UserContext>() { currentUser });
-            CommandContext returnValue = new CommandContext(currentUser, common);
+            CommandContext returnValue = new CommandContext(currentUser, null);
             returnValue.User.CurrentDirectory = GetFSManager().CreateDirectory(@"C:");
             return returnValue;
         }

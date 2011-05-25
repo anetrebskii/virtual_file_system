@@ -5,63 +5,88 @@ using System.Text;
 using VFS.Contract;
 using System.ServiceModel;
 using VFS.Server.Core.Commands;
+using VFS.Server.Core;
+using System.Security.Authentication;
 
 namespace VFS.Server.Console.Protocol
 {
+    /// <summary>
+    /// Represent remote console to work with file system
+    /// </summary>
     [ServiceBehavior(InstanceContextMode = InstanceContextMode.PerSession, ConcurrencyMode = ConcurrencyMode.Multiple)]
-    class RemoteConsole : IRemoteConsole
+    sealed class RemoteConsole : IRemoteConsole
     {
-        private static List<ConnectedUser> _chatUsers = new List<ConnectedUser>();
-        private ConnectedUser _user;  
+        /// <summary>
+        /// All connected and authenticated users
+        /// </summary>
+        private static List<ConnectedUser> _connectedUsers = new List<ConnectedUser>();
+
+        /// <summary>
+        /// Server console to handle user commands
+        /// </summary>
+        private static ServerConsole _console = new ServerConsole();
+
+        /// <summary>
+        /// Current connected user
+        /// </summary>
+        private ConnectedUser _currentUser;
 
         #region IRemoteConsole Members
 
-        public bool Authentificate(string userName)
+        /// <summary>
+        /// Authenticate on the server
+        /// </summary>
+        /// <param name="userName">user name for authentication</param>
+        /// <returns><c>true</c> - authentication success</returns>
+        public bool Authenticate(string userName)
         {
+            if (_connectedUsers.Exists(u =>
+                String.Compare(u.Context.UserName, userName, StringComparison.OrdinalIgnoreCase) == 0))
+            {
+                return false;
+            }
             IConsoleCallback callback = OperationContext.Current.GetCallbackChannel<IConsoleCallback>();
-            //Массив всех участников чата, который мы вернем клиенту  
-            //string[] tmpUsers = new string[_chatUsers.Count];
-            //for (int i = 0; i < _chatUsers.Count; i++)
-            //{
-            //    tmpUsers[i] = _chatUsers[i].Name;
-            //}
-            //Оповещаем всех клиентов что в чат вощел новый пользователь  
-            //foreach (UserContext user in _chatUsers)
-            //{
-            //    user.Callback.UserEnter(name);
-            //}
-            //Создаем новый экземплар пользователя и заполняем все его поля  
-            ConnectedUser chatUser = new ConnectedUser() { Callback = callback };
-            _chatUsers.Add(chatUser);
-            _user = chatUser;
-            System.Console.WriteLine(">>User Enter: {0}", userName);
+            _currentUser = new ConnectedUser(_console.Authenticate(userName), callback);
+            _connectedUsers.Add(_currentUser);
             return true;
         }
 
+        /// <summary>
+        /// Return user position in file system of a server
+        /// </summary>
+        /// <returns>Path of the user position</returns>
+        public string GetUserPosition()
+        {
+            return _currentUser.Context.CurrentDirectory.FullPath;
+        }
+
+        /// <summary>
+        /// Exit from the server
+        /// </summary>
         public void Quite()
         {
-            _chatUsers.Remove(_user);
-            //Оповещаем всех клиентов о том что пользователь нас покинул  
-            //foreach (ChatUser item in _chatUsers)
-            //{
-            //    item.Callback.UserLeave(_user.Name);
-            //}
-            _user = null;
-            
-            //Закрываем канал связи с текущим пользователем  
+            _connectedUsers.Remove(_currentUser);
+            _currentUser = null;
             //OperationContext.Current.Channel.Abort();
         }
 
+        /// <summary>
+        /// Handle command from client
+        /// </summary>
+        /// <param name="command">command in text format</param>
+        /// <returns>Respoinse from server</returns>
         public string SendCommand(string command)
         {
-            //var usersSending = from u in _chatUsers
-            //                   where u.Name != _user.Name
-            //                   select u;
-            //foreach (ConnectedUser item in usersSending)
-            //{
-            //    item.Callback.Receive(_user.Name, msg);
-            //}
-            return "OK";
+            string response = _console.InputCommand(command, _currentUser.Context, _connectedUsers.Select(u => u.Context));
+            _connectedUsers.ForEach(u => 
+                {
+                    if (!ReferenceEquals(_currentUser, u))
+                    {
+                        u.Callback.Receive(
+                            String.Format("{0} performs command: {1}", _currentUser.Context.UserName, command));
+                    }
+                });
+            return response;
         }
 
         #endregion

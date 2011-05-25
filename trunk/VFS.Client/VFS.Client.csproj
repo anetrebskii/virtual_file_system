@@ -48,15 +48,19 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ConnectionData.cs" />
     <Compile Include="ConsoleCallback.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\VFS.Contract\VFS.Contract.csproj">
+    <ProjectReference Include="..\VFS.Contract\VFS.Common.csproj">
       <Project>{D5351D28-1933-4787-ADDC-B8968300833E}</Project>
-      <Name>VFS.Contract</Name>
+      <Name>VFS.Common</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

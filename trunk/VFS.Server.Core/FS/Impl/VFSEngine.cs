@@ -11,7 +11,13 @@ namespace VFS.Server.Core.FS.Impl
 {
     sealed class VFSEngine : IFSEngine
     {
-        private IDirectory _rootDirectory = new VFSDirectory();
+        public static readonly char SEPARATOR = '\\';
+        private IDirectory _rootDirectory = new VFSDirectory() { Name = "C:" };
+
+        public IDirectory GetDefaultDirectory()
+        {
+            return _rootDirectory;
+        }
 
         #region Commands
 
@@ -46,6 +52,10 @@ namespace VFS.Server.Core.FS.Impl
             }
             string pathToDelete = context.Args[0];
             IDirectory directoryToDelete = FindDirectory(pathToDelete, context.User.CurrentDirectory);
+            if (directoryToDelete == null)
+            {
+                throw new FSException("Не найдена директория для удаления");
+            }
             if (Object.ReferenceEquals(directoryToDelete, context.User.CurrentDirectory))
             {
                 throw new FSException("Нельзя удалить текущую директорию");
@@ -316,11 +326,11 @@ namespace VFS.Server.Core.FS.Impl
         public string UpPath(string path)
         {
             path = RemoveOddSymbols(path);
-            if (path.LastIndexOf('\\') == -1)
+            if (path.LastIndexOf(SEPARATOR) == -1)
             {
                 return path;
             }
-            return path.Remove(path.LastIndexOf('\\'));
+            return path.Remove(path.LastIndexOf(SEPARATOR));
         }
 
         public IFile FindFile(string filePath, IDirectory currentDirectory)
@@ -423,7 +433,7 @@ namespace VFS.Server.Core.FS.Impl
         /// <returns>Clear path, without odd symbols</returns>
         private string RemoveOddSymbols(string path)
         {
-            return path = path.Trim(' ', '\\');
+            return path = path.Trim(' ', SEPARATOR);
         }
 
         /// <summary>
@@ -433,7 +443,7 @@ namespace VFS.Server.Core.FS.Impl
         /// <returns>Array of folder and file names</returns>
         private string[] splitPath(string path)
         {
-            return path.Split('\\');
+            return path.Split(SEPARATOR);
         }
 
         protected static bool hasOneParameter(string[] args)

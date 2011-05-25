@@ -29,26 +29,29 @@ namespace VFS.Server.Core.Commands
         /// <summary>
         /// Keep common information
         /// </summary>
-        public CommonContext Common { get; private set; }
+        public IEnumerable<UserContext> OtherUsers { get; private set; }
 
         /// <summary>
         /// Initialize new instance of class <see cref="CommandContext"/>
         /// </summary>
         /// <param name="user">User, who execute command</param>
+        /// <param name="otherUsers">Other users</param>
         /// 
-        /// <exception cref="ArgumentNullException">if <paramref name="user"/> is null</exception>
-        public CommandContext(UserContext user, CommonContext common)
+        /// <exception cref="ArgumentNullException">
+        /// if <paramref name="user"/> or <paramref name="otherUsers"/> is null
+        /// </exception>
+        public CommandContext(UserContext user, IEnumerable<UserContext> otherUsers)
         {
             if (user == null)
             {
                 throw new ArgumentNullException("user");
             }
-            if (common == null)
+            if (otherUsers == null)
             {
-                throw new ArgumentNullException("common");
+                throw new ArgumentNullException("otherUsers");
             }
             User = user;
-            Common = common;
+            OtherUsers = otherUsers;
         }
     }
 }
