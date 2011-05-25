@@ -77,20 +77,20 @@ namespace VFS.Tests.Server.Core.FS
             _context = CommandHelper.CreateCommandContext();
             _rootDirectory = _context.User.CurrentDirectory;
 
-            _file1 = CommandHelper.GetFSManager().CreateFile("file1");
+            _file1 = CommandHelper.CreateFile("file1");
             _rootDirectory.AddFile(_file1);
 
-            _child1Directory = CommandHelper.GetFSManager().CreateDirectory("child1");
-            _child2Directory = CommandHelper.GetFSManager().CreateDirectory("child2");
-            _child3Directory = CommandHelper.GetFSManager().CreateDirectory("child3");
+            _child1Directory = CommandHelper.CreateDirectory("child1");
+            _child2Directory = CommandHelper.CreateDirectory("child2");
+            _child3Directory = CommandHelper.CreateDirectory("child3");
             _rootDirectory.AddDirectory(_child1Directory);
             _rootDirectory.AddDirectory(_child2Directory);
             _rootDirectory.AddDirectory(_child3Directory);
 
-            _child1Directory.AddDirectory(CommandHelper.GetFSManager().CreateDirectory("child11"));
-            _child1Directory.AddDirectory(CommandHelper.GetFSManager().CreateDirectory("child12"));
-            _child2Directory.AddDirectory(CommandHelper.GetFSManager().CreateDirectory("child21"));
-            _child2Directory.AddDirectory(CommandHelper.GetFSManager().CreateDirectory("child22"));
+            _child1Directory.AddDirectory(CommandHelper.CreateDirectory("child11"));
+            _child1Directory.AddDirectory(CommandHelper.CreateDirectory("child12"));
+            _child2Directory.AddDirectory(CommandHelper.CreateDirectory("child21"));
+            _child2Directory.AddDirectory(CommandHelper.CreateDirectory("child22"));
         }
         
         #endregion
@@ -367,6 +367,20 @@ namespace VFS.Tests.Server.Core.FS
             // Assert
             Assert.ReferenceEquals(_child1Directory, _context.User.CurrentDirectory);
         }
+
+        [TestMethod]
+        public void NavigateTo_RootPath()
+        {
+            // Arrange
+            _context.Args = new string[] { @"c:\" };
+            _context.User.CurrentDirectory = _child1Directory;
+
+            // Act
+            _engine.Navigate(_context);
+
+            // Assert
+            Assert.ReferenceEquals(_rootDirectory, _context.User.CurrentDirectory);
+        }
         
         #endregion
         
@@ -440,7 +454,7 @@ namespace VFS.Tests.Server.Core.FS
         public void PrintFileSystem()
         {
             // Arrange
-            IFile file11 = CommandHelper.GetFSManager().CreateFile("file11");
+            IFile file11 = CommandHelper.CreateFile("file11");
             file11.LockedUsers.AddRange(new string[] { "user1", "user2" });
             _child1Directory.AddFile(file11);
             _file1.LockedUsers.Add("user");

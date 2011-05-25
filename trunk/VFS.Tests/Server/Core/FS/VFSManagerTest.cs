@@ -41,17 +41,17 @@ namespace VFS.Tests.Server.Core.FS
         {
             _vfsManager = new VFSEngine();
 
-            _rootDirectory = _vfsManager.CreateDirectory("c:");
-            IDirectory child1 = _vfsManager.CreateDirectory("child1");
-            IDirectory child2 = _vfsManager.CreateDirectory("child2");
+            _rootDirectory = CommandHelper.CreateDirectory("c:");
+            IDirectory child1 = CommandHelper.CreateDirectory("child1");
+            IDirectory child2 = CommandHelper.CreateDirectory("child2");
 
             _rootDirectory.AddDirectory(child1);
             _rootDirectory.AddDirectory(child2);
 
-            child1.AddDirectory(_vfsManager.CreateDirectory("child11"));
-            child1.AddDirectory(_vfsManager.CreateDirectory("child12"));
-            child2.AddDirectory(_vfsManager.CreateDirectory("child21"));
-            child2.AddDirectory(_vfsManager.CreateDirectory("child22"));
+            child1.AddDirectory(CommandHelper.CreateDirectory("child11"));
+            child1.AddDirectory(CommandHelper.CreateDirectory("child12"));
+            child2.AddDirectory(CommandHelper.CreateDirectory("child21"));
+            child2.AddDirectory(CommandHelper.CreateDirectory("child22"));
         }
 
         [TestMethod]

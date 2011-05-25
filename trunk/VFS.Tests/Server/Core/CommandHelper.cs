@@ -11,19 +11,26 @@ namespace VFS.Tests.Server.Core
 {
     sealed class CommandHelper
     {
-        private static VFSEngine _fsFactory = new VFSEngine();
+        public static List<UserContext> _users = new List<UserContext>();
 
         public static CommandContext CreateCommandContext()
         {
             UserContext currentUser = new UserContext("name");
-            CommandContext returnValue = new CommandContext(currentUser, null);
-            returnValue.User.CurrentDirectory = GetFSManager().CreateDirectory(@"C:");
+            CommandContext returnValue = new CommandContext(currentUser, _users);
+            returnValue.User.CurrentDirectory = CreateDirectory(@"C:");
             return returnValue;
         }
 
-        public static VFSEngine GetFSManager()
+        public static IDirectory CreateDirectory(string name)
         {
-            return _fsFactory;
+            return new VFSDirectory() { Name = name };
         }
+
+        public static IFile CreateFile(string name)
+        {
+            return new VFSFile() { Name = name };
+        }
+
+
     }
 }

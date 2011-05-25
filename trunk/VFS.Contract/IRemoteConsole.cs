@@ -18,7 +18,7 @@ namespace VFS.Contract
         /// <param name="userName">user name for authentication</param>
         /// <returns><c>true</c> - authentication success</returns>
         [OperationContract(IsInitiating = true, IsOneWay = false, IsTerminating = false)]
-        bool Authenticate(string userName);
+        AuthenticationResult Authenticate(string userName);
 
         /// <summary>
         /// Exit from the server

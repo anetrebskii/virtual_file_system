@@ -17,6 +17,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VFS.Common", "VFS.Contract\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VFS.Client", "VFS.Client\VFS.Client.csproj", "{B0A944FA-0371-4676-8C0E-83C515A36428}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VFS.Server.WinService", "VFS.Server.WinService\VFS.Server.WinService.csproj", "{AA6212A0-6DFB-4B70-BF09-9399A89F0EEC}"
+EndProject
 Global
 	GlobalSection(TestCaseManagementSettings) = postSolution
 		CategoryFile = VFS.vsmdi
@@ -46,6 +48,10 @@ Global
 		{B0A944FA-0371-4676-8C0E-83C515A36428}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B0A944FA-0371-4676-8C0E-83C515A36428}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B0A944FA-0371-4676-8C0E-83C515A36428}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AA6212A0-6DFB-4B70-BF09-9399A89F0EEC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AA6212A0-6DFB-4B70-BF09-9399A89F0EEC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AA6212A0-6DFB-4B70-BF09-9399A89F0EEC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AA6212A0-6DFB-4B70-BF09-9399A89F0EEC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

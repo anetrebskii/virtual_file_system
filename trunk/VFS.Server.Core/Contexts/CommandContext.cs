@@ -27,6 +27,11 @@ namespace VFS.Server.Core.Commands
         public string Response { get; set; }
 
         /// <summary>
+        /// Represent information about that system changed after handle command
+        /// </summary>
+        public bool SystemChanged { get; set; }
+
+        /// <summary>
         /// Keep common information
         /// </summary>
         public IEnumerable<UserContext> OtherUsers { get; private set; }

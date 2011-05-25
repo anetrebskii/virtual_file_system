@@ -15,8 +15,12 @@ namespace VFS.Client
         /// </summary>
         static readonly string _endpointName = "RemoteConsole";
 
+        static DuplexChannelFactory<IRemoteConsole> _factory;
+
         static void Main(string[] args)
         {
+            InstanceContext context = new InstanceContext(new ConsoleCallback());
+            _factory = new DuplexChannelFactory<IRemoteConsole>(context, _endpointName);
             while (true)
             {
                 IRemoteConsole remoteConsole = connectToServer();
@@ -43,7 +47,12 @@ namespace VFS.Client
                     remoteConsole.Quite();
                     break;
                 }
-                Console.WriteLine(remoteConsole.SendCommand(command));
+                string serverResponse = remoteConsole.SendCommand(command);
+                if (serverResponse == null || serverResponse.Trim() == String.Empty)
+                {
+                    continue;
+                }
+                Console.WriteLine(serverResponse);
             }
         }
 
@@ -66,7 +75,8 @@ namespace VFS.Client
                 catch (FormatException ex)
                 {
                     Console.WriteLine("Please input 'connect <server address/server name> <user name>'");
-                }                
+                    continue;
+                }
                 returnValue = tryConnectToServer(connectionData);
             }
             return returnValue;
@@ -79,28 +89,23 @@ namespace VFS.Client
         /// <returns>Remote console from server. <c>null</c> - if connection was fail</returns>
         private static IRemoteConsole tryConnectToServer(ConnectionData connectionData)
         {
-            InstanceContext context = new InstanceContext(new ConsoleCallback());
-            using (DuplexChannelFactory<IRemoteConsole> factory =
-                    new DuplexChannelFactory<IRemoteConsole>(context, _endpointName, connectionData.Endpoint))
+            IRemoteConsole remoteConsole = _factory.CreateChannel(connectionData.Endpoint);
+            try
             {
-                IRemoteConsole remoteConsole = factory.CreateChannel();
-                try
-                {                    
-                    bool authenticateSuccess = remoteConsole.Authenticate(connectionData.UserName);
-                    if (authenticateSuccess)
-                    {
-                        return remoteConsole;
-                    }
-                    else
-                    {
-                        Console.WriteLine("Authentication was fail");
-                    }
-                }
-                catch (EndpointNotFoundException ex)
+                AuthenticationResult authenticateSuccess = remoteConsole.Authenticate(connectionData.UserName);
+                if (authenticateSuccess.IsSuccess)
                 {
-                    factory.Abort();
-                    Console.WriteLine("Server with this address not found");
+                    Console.WriteLine("Count connected users, without you: {0}", authenticateSuccess.CountAuthenticatedUsers);
+                    return remoteConsole;
                 }
+                else
+                {
+                    Console.WriteLine("Authentication was fail");
+                }
+            }
+            catch (EndpointNotFoundException ex)
+            {
+                Console.WriteLine("Server with this address not found");
             }
             return null;
         }

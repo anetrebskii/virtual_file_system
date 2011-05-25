@@ -48,6 +48,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AuthenticationResult.cs" />
     <Compile Include="IConsoleCallback.cs" />
     <Compile Include="IRemoteConsole.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

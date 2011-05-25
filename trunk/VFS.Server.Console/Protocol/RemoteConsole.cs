@@ -38,17 +38,17 @@ namespace VFS.Server.Console.Protocol
         /// </summary>
         /// <param name="userName">user name for authentication</param>
         /// <returns><c>true</c> - authentication success</returns>
-        public bool Authenticate(string userName)
+        public AuthenticationResult Authenticate(string userName)
         {
             if (_connectedUsers.Exists(u =>
                 String.Compare(u.Context.UserName, userName, StringComparison.OrdinalIgnoreCase) == 0))
             {
-                return false;
+                return AuthenticationResult.Failed();
             }
             IConsoleCallback callback = OperationContext.Current.GetCallbackChannel<IConsoleCallback>();
             _currentUser = new ConnectedUser(_console.Authenticate(userName), callback);
             _connectedUsers.Add(_currentUser);
-            return true;
+            return AuthenticationResult.Success(_connectedUsers.Count - 1);
         }
 
         /// <summary>
@@ -77,16 +77,19 @@ namespace VFS.Server.Console.Protocol
         /// <returns>Respoinse from server</returns>
         public string SendCommand(string command)
         {
-            string response = _console.InputCommand(command, _currentUser.Context, _connectedUsers.Select(u => u.Context));
-            _connectedUsers.ForEach(u => 
-                {
-                    if (!ReferenceEquals(_currentUser, u))
+            HandleResult handleResult = _console.HandleCommand(command, _currentUser.Context, _connectedUsers.Select(u => u.Context));
+            if (handleResult.SystemChanged)
+            {
+                _connectedUsers.ForEach(u =>
                     {
-                        u.Callback.Receive(
-                            String.Format("{0} performs command: {1}", _currentUser.Context.UserName, command));
-                    }
-                });
-            return response;
+                        if (!ReferenceEquals(_currentUser, u))
+                        {
+                            u.Callback.Receive(
+                                String.Format("{0} performs command: {1}", _currentUser.Context.UserName, command));
+                        }
+                    });
+            }
+            return handleResult.Response;
         }
 
         #endregion
