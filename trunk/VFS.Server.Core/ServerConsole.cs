@@ -112,6 +112,11 @@ namespace VFS.Server.Core
             {
                 return new HandleResult() { Response = "Указанная команда не найдена" };
             }
+            catch (Exception)
+            {
+                //TODO: Log
+                throw;
+            }
         }
     }
 }

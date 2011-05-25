@@ -118,12 +118,14 @@ namespace VFS.Server.Core
         }
 
         /// <summary>
-        /// Выполняет глубокое копирование объекта
+        /// Execute deep copy of the object
         /// </summary>
-        /// <param name="current">Объект для копирования</param>
+        /// <param name="current">Object to deep copy</param>
         ///
-        /// <exception cref="ArgumentNullException">если <paramref name="current"/> = null</exception>
-        /// <exception cref="System.Runtime.Serialization.SerializationException">При сериализации или десериализации <paramref name="current"/></exception>
+        /// <exception cref="ArgumentNullException">if <paramref name="current"/> is null</exception>
+        /// <exception cref="System.Runtime.Serialization.SerializationException">
+        /// During serialization or deserialization of the <paramref name="current"/>
+        /// </exception>
         public static object DeepCopy(this object current)
         {            
             var formatter = new BinaryFormatter();
