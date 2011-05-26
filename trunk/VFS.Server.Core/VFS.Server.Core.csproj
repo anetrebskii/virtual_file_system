@@ -48,8 +48,6 @@
     <Compile Include="Response.cs" />
     <Compile Include="Contexts\UserContext.cs" />
     <Compile Include="Contexts\CommandContext.cs" />
-    <Compile Include="Exceptions\FewArgumentsException.cs" />
-    <Compile Include="Exceptions\FSException.cs" />
     <Compile Include="Extension\ExtenstionMethods.cs" />
     <Compile Include="FS\IDirectory.cs" />
     <Compile Include="FS\IFile.cs" />

@@ -5,7 +5,6 @@ using System.Text;
 using VFS.Server.Core.Commands;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
-using VFS.Server.Core.Exceptions;
 using VFS.Server.Core.Contexts;
 using System.Threading;
 
@@ -25,6 +24,11 @@ namespace VFS.Server.Core.FS.Impl
         /// Root directory
         /// </summary>
         private IDirectory _rootDirectory = new VFSDirectory() { Name = "C:" };
+
+        /// <summary>
+        /// Object to syncronize commands execution
+        /// </summary>
+        private object _syncCommand = new object();
 
         /// <summary>
         /// Return default directory for this file system
@@ -51,15 +55,18 @@ namespace VFS.Server.Core.FS.Impl
                 Response.Failed("1 аргумент - путь к директории");
             }
             string directoryPath = context.Args[0];
-            IDirectory parentDirectory = findParentDirectory(context);
-            if (parentDirectory == null)
+            lock (_syncCommand)
             {
-                return Response.Failed("Не найдена директория для создания папки");
+                IDirectory parentDirectory = findParentDirectory(context);
+                if (parentDirectory == null)
+                {
+                    return Response.Failed("Не найдена директория для создания папки");
+                }
+                string directoryName = Path.GetFileName(directoryPath);
+                IDirectory newDirectory = new VFSDirectory { Name = directoryName };
+                parentDirectory.AddDirectory(newDirectory);
+                return Response.Success(true);
             }
-            string directoryName = Path.GetFileName(directoryPath);
-            IDirectory newDirectory = new VFSDirectory { Name = directoryName };
-            parentDirectory.AddDirectory(newDirectory);
-            return Response.Success(true);
         }
 
         #endregion
@@ -78,29 +85,32 @@ namespace VFS.Server.Core.FS.Impl
                 return Response.Failed("1 аргумент - путь к директории");
             }
             string pathToDelete = context.Args[0];
-            IDirectory directoryToDelete = FindDirectory(pathToDelete, context.User.CurrentDirectory);
-            if (directoryToDelete == null)
+            lock (_syncCommand)
             {
-                return Response.Failed("Не найдена директория для удаления");
+                IDirectory directoryToDelete = FindDirectory(pathToDelete, context.User.CurrentDirectory);
+                if (directoryToDelete == null)
+                {
+                    return Response.Failed("Не найдена директория для удаления");
+                }
+                if (Object.ReferenceEquals(directoryToDelete, context.User.CurrentDirectory))
+                {
+                    return Response.Failed("Нельзя удалить текущую директорию");
+                }
+                if (directoryToDelete.GetDirectories().Count() > 0)
+                {
+                    return Response.Failed("Данная директория содержит дочерние директории");
+                }
+                if (directoryToDelete.GetFiles().Count(f => f.LockedUsers.Count > 0) > 0)
+                {
+                    return Response.Failed("Невозможно удалить директорию с заблокированными файлами");
+                }
+                if (((VFSDirectory)directoryToDelete).CountUsers > 0)
+                {
+                    return Response.Failed("Невозможно удалить директорию, т.к. она используется другими пользователями");
+                }
+                directoryToDelete.Parent.RemoveDirectory(directoryToDelete);
+                return Response.Success(true);
             }
-            if (Object.ReferenceEquals(directoryToDelete, context.User.CurrentDirectory))
-            {
-                return Response.Failed("Нельзя удалить текущую директорию");
-            }
-            if (directoryToDelete.GetDirectories().Count() > 0)
-            {
-                return Response.Failed("Данная директория содержит дочерние директории");
-            }
-            if (directoryToDelete.GetFiles().Count(f => f.LockedUsers.Count > 0) > 0)
-            {
-                return Response.Failed("Невозможно удалить директорию с заблокированными файлами");
-            }
-            if (((VFSDirectory)directoryToDelete).CountUsers > 0)
-            {
-                return Response.Failed("Невозможно удалить директорию, т.к. она используется другими пользователями");
-            }
-            directoryToDelete.Parent.RemoveDirectory(directoryToDelete);
-            return Response.Success(true);
         }
 
         #endregion
@@ -119,29 +129,32 @@ namespace VFS.Server.Core.FS.Impl
                 return Response.Failed("1 аргумент - путь к директории");
             }
             string pathToDelete = context.Args[0];
-            IDirectory directoryToDelete = FindDirectory(pathToDelete, context.User.CurrentDirectory);
-            if (directoryToDelete == null)
+            lock (_syncCommand)
             {
-                return Response.Failed("Не найдена директория для удаления");
+                IDirectory directoryToDelete = FindDirectory(pathToDelete, context.User.CurrentDirectory);
+                if (directoryToDelete == null)
+                {
+                    return Response.Failed("Не найдена директория для удаления");
+                }
+                if (Object.ReferenceEquals(directoryToDelete, context.User.CurrentDirectory))
+                {
+                    return Response.Failed("Нельзя удалить текущую директорию");
+                }
+                if (directoryToDelete.Exists(
+                    d => d.GetDirectories(),
+                    d => d.GetFiles().Count(f => f.LockedUsers.Count > 0) > 0))
+                {
+                    return Response.Failed("Невозможно удалить директорию с заблокированными файлами");
+                }
+                if (directoryToDelete.Exists(
+                    d => d.GetDirectories(),
+                    d => ((VFSDirectory)d).CountUsers > 0))
+                {
+                    return Response.Failed("Невозможно удалить директорию, т.к. она или ее поддиректории используется другими пользователями");
+                }
+                directoryToDelete.Parent.RemoveDirectory(directoryToDelete);
+                return Response.Success(true);
             }
-            if (Object.ReferenceEquals(directoryToDelete, context.User.CurrentDirectory))
-            {
-                return Response.Failed("Нельзя удалить текущую директорию");
-            }
-            if (directoryToDelete.Exists(
-                d => d.GetDirectories(), 
-                d => d.GetFiles().Count(f => f.LockedUsers.Count > 0) > 0))
-            {
-                return Response.Failed("Невозможно удалить директорию с заблокированными файлами");
-            }
-            if (directoryToDelete.Exists(
-                d => d.GetDirectories(),
-                d => ((VFSDirectory)d).CountUsers > 0))
-            {
-                return Response.Failed("Невозможно удалить директорию, т.к. она или ее поддиректории используется другими пользователями");
-            }
-            directoryToDelete.Parent.RemoveDirectory(directoryToDelete);
-            return Response.Success(true);
         }
 
         #endregion
@@ -160,14 +173,17 @@ namespace VFS.Server.Core.FS.Impl
                 return Response.Failed("1 аргумент - путь к файлу");
             }
             string filePath = context.Args[0];
-            IDirectory parentDirectory = findParentDirectory(context);
-            if (parentDirectory == null)
+            lock (_syncCommand)
             {
-                return Response.Failed("Не найдена директория для создания файла");
+                IDirectory parentDirectory = findParentDirectory(context);
+                if (parentDirectory == null)
+                {
+                    return Response.Failed("Не найдена директория для создания файла");
+                }
+                string newFileName = Path.GetFileName(filePath);
+                parentDirectory.AddFile(new VFSFile() { Name = newFileName });
+                return Response.Success(true);
             }
-            string newFileName = Path.GetFileName(filePath);
-            parentDirectory.AddFile(new VFSFile() { Name = newFileName });
-            return Response.Success(true);
         }
 
         #endregion
@@ -186,17 +202,20 @@ namespace VFS.Server.Core.FS.Impl
                 return Response.Failed("1 аргумент - путь к файлу");
             }
             string pathToDelete = context.Args[0];
-            IFile fileToDelete = FindFile(pathToDelete, context.User.CurrentDirectory);
-            if (fileToDelete == null)
+            lock (_syncCommand)
             {
-                return Response.Failed("Не найден файл для удаления");
+                IFile fileToDelete = FindFile(pathToDelete, context.User.CurrentDirectory);
+                if (fileToDelete == null)
+                {
+                    return Response.Failed("Не найден файл для удаления");
+                }
+                if (fileToDelete.LockedUsers.Count > 0)
+                {
+                    return Response.Failed("Невозможно удалить заблокированный файл");
+                }
+                fileToDelete.Directory.RemoveFile(fileToDelete);
+                return Response.Success(true);
             }
-            if (fileToDelete.LockedUsers.Count > 0)
-            {
-                return Response.Failed("Невозможно удалить заблокированный файл");
-            }
-            fileToDelete.Directory.RemoveFile(fileToDelete);
-            return Response.Success(true);
         }
 
         #endregion
@@ -215,16 +234,19 @@ namespace VFS.Server.Core.FS.Impl
                 return Response.Failed("1 аргумент - путь к файлу");
             }
             string pathToDelete = context.Args[0];
-            IFile file = FindFile(pathToDelete, context.User.CurrentDirectory);
-            if (file == null)
+            lock (_syncCommand)
             {
-                return Response.Failed("Не найден файл для блокировки");
+                IFile file = FindFile(pathToDelete, context.User.CurrentDirectory);
+                if (file == null)
+                {
+                    return Response.Failed("Не найден файл для блокировки");
+                }
+                if (!file.LockedUsers.Contains(context.User.UserName))
+                {
+                    file.LockedUsers.Add(context.User.UserName);
+                }
+                return Response.Success(true);
             }
-            if (!file.LockedUsers.Contains(context.User.UserName))
-            {
-                file.LockedUsers.Add(context.User.UserName);
-            }
-            return Response.Success(true);
         }
 
         #endregion
@@ -243,16 +265,19 @@ namespace VFS.Server.Core.FS.Impl
                 return Response.Failed("1 аргумент - путь к файлу");
             }
             string pathToDelete = context.Args[0];
-            IFile file = FindFile(pathToDelete, context.User.CurrentDirectory);
-            if (file == null)
+            lock (_syncCommand)
             {
-                return Response.Failed("Не найден файл для разблокировки");
+                IFile file = FindFile(pathToDelete, context.User.CurrentDirectory);
+                if (file == null)
+                {
+                    return Response.Failed("Не найден файл для разблокировки");
+                }
+                if (file.LockedUsers.Contains(context.User.UserName))
+                {
+                    file.LockedUsers.Remove(context.User.UserName);
+                }
+                return Response.Success(true);
             }
-            if (file.LockedUsers.Contains(context.User.UserName))
-            {
-                file.LockedUsers.Remove(context.User.UserName);
-            }
-            return Response.Success(true);
         }
 
         #endregion
@@ -271,15 +296,24 @@ namespace VFS.Server.Core.FS.Impl
                 return Response.Failed("1 аргумент - путь к директории");
             }
             string pathToNavigate = context.Args[0];
-            IDirectory directoryToNavigate = FindDirectory(pathToNavigate, context.User.CurrentDirectory);
-            if (directoryToNavigate == null)
+            lock (_syncCommand)
             {
-                return Response.Failed("Не найдена указанная директория");
+                IDirectory directoryToNavigate = FindDirectory(pathToNavigate, context.User.CurrentDirectory);
+                if (directoryToNavigate == null)
+                {
+                    return Response.Failed("Не найдена указанная директория");
+                }
+                if (!ReferenceEquals(context.User.CurrentDirectory, context.User.CurrentDirectory.Root))
+                {
+                    Interlocked.Decrement(ref ((VFSDirectory)context.User.CurrentDirectory).CountUsers);
+                }
+                context.User.CurrentDirectory = directoryToNavigate;
+                if (!ReferenceEquals(context.User.CurrentDirectory, context.User.CurrentDirectory.Root))
+                {
+                    Interlocked.Increment(ref ((VFSDirectory)context.User.CurrentDirectory).CountUsers);
+                }
+                return Response.Success(false);
             }
-            Interlocked.Increment(ref ((VFSDirectory)directoryToNavigate).CountUsers);
-            context.User.CurrentDirectory = directoryToNavigate;
-            Interlocked.Increment(ref ((VFSDirectory)directoryToNavigate).CountUsers);
-            return Response.Success(false);
         }
 
         #endregion
@@ -300,44 +334,47 @@ namespace VFS.Server.Core.FS.Impl
             string sourcePath = context.Args[0];
             string destPath = context.Args[1];
 
-            IDirectory destDirectory = FindDirectory(destPath, context.User.CurrentDirectory);
-            IDirectory sourceDirectory = FindDirectory(sourcePath, context.User.CurrentDirectory);
-            if (destDirectory == null)
+            lock (_syncCommand)
             {
-                return Response.Failed("Не найдена директория, куда нужно переместить объект");
+                IDirectory destDirectory = FindDirectory(destPath, context.User.CurrentDirectory);
+                IDirectory sourceDirectory = FindDirectory(sourcePath, context.User.CurrentDirectory);
+                if (destDirectory == null)
+                {
+                    return Response.Failed("Не найдена директория, куда нужно переместить объект");
+                }
+                if (sourceDirectory == null)
+                {
+                    IFile sourceFile = FindFile(sourcePath, context.User.CurrentDirectory);
+                    if (sourceFile == null)
+                    {
+                        return Response.Failed("Не найден объект для перемещения");
+                    }
+                    sourceFile.Directory.RemoveFile(sourceFile);
+                    destDirectory.AddFile(sourceFile);
+                }
+                else
+                {
+                    if (sourceDirectory.Parent == null)
+                    {
+                        return Response.Failed("Нельзя перемещать корневую директорию");
+                    }
+                    if (sourceDirectory.Exists(
+                        d => d.GetDirectories(),
+                        d => d.GetFiles().Count(f => f.LockedUsers.Count > 0) > 0))
+                    {
+                        return Response.Failed("Невозможно переместить директорию с заблокированными файлами");
+                    }
+                    if (sourceDirectory.Exists(
+                        d => d.GetDirectories(),
+                        d => ((VFSDirectory)d).CountUsers > 0))
+                    {
+                        return Response.Failed("Невозможно переместить директорию, т.к. она или ее поддиректории используется другими пользователями");
+                    }
+                    sourceDirectory.Parent.RemoveDirectory(sourceDirectory);
+                    destDirectory.AddDirectory(sourceDirectory);
+                }
+                return Response.Success(true);
             }
-            if (sourceDirectory == null)
-            {
-                IFile sourceFile = FindFile(sourcePath, context.User.CurrentDirectory);
-                if (sourceFile == null)
-                {
-                    return Response.Failed("Не найден объект для перемещения");
-                }
-                sourceFile.Directory.RemoveFile(sourceFile);
-                destDirectory.AddFile(sourceFile);
-            }
-            else
-            {
-                if (sourceDirectory.Parent == null)
-                {
-                    return Response.Failed("Нельзя перемещать корневую директорию");
-                }
-                if (sourceDirectory.Exists(
-                    d => d.GetDirectories(),
-                    d => d.GetFiles().Count(f => f.LockedUsers.Count > 0) > 0))
-                {
-                    return Response.Failed("Невозможно переместить директорию с заблокированными файлами");
-                }
-                if (sourceDirectory.Exists(
-                    d => d.GetDirectories(),
-                    d => ((VFSDirectory)d).CountUsers > 0))
-                {
-                    return Response.Failed("Невозможно переместить директорию, т.к. она или ее поддиректории используется другими пользователями");
-                }
-                sourceDirectory.Parent.RemoveDirectory(sourceDirectory);
-                destDirectory.AddDirectory(sourceDirectory);
-            }
-            return Response.Success(true);
         }
 
         #endregion
@@ -357,29 +394,31 @@ namespace VFS.Server.Core.FS.Impl
             }
             string sourcePath = context.Args[0];
             string destPath = context.Args[1];
-
-            IDirectory destDirectory = FindDirectory(destPath, context.User.CurrentDirectory);
-            IDirectory sourceDirectory = FindDirectory(sourcePath, context.User.CurrentDirectory);
-            if (destDirectory == null)
+            lock (_syncCommand)
             {
-                return Response.Failed("Не найдена директория, куда нужно скопировать объект");
-            }
-            if (sourceDirectory == null)
-            {
-                IFile sourceFile = FindFile(sourcePath, context.User.CurrentDirectory);
-                IFile copiedFile = (IFile)sourceFile.DeepCopy();
-                destDirectory.AddFile(copiedFile);
-            }
-            else
-            {
-                if (sourceDirectory.Parent == null)
+                IDirectory destDirectory = FindDirectory(destPath, context.User.CurrentDirectory);
+                IDirectory sourceDirectory = FindDirectory(sourcePath, context.User.CurrentDirectory);
+                if (destDirectory == null)
                 {
-                    return Response.Failed("Нельзя скопировать корневую директорию");
+                    return Response.Failed("Не найдена директория, куда нужно скопировать объект");
                 }
-                IDirectory copiedDirectory = (IDirectory)sourceDirectory.DeepCopy();
-                destDirectory.AddDirectory(copiedDirectory);
+                if (sourceDirectory == null)
+                {
+                    IFile sourceFile = FindFile(sourcePath, context.User.CurrentDirectory);
+                    IFile copiedFile = (IFile)sourceFile.DeepCopy();
+                    destDirectory.AddFile(copiedFile);
+                }
+                else
+                {
+                    if (sourceDirectory.Parent == null)
+                    {
+                        return Response.Failed("Нельзя скопировать корневую директорию");
+                    }
+                    IDirectory copiedDirectory = (IDirectory)sourceDirectory.DeepCopy();
+                    destDirectory.AddDirectory(copiedDirectory);
+                }
+                return Response.Success(true);
             }
-            return Response.Success(true);
         }
 
         #endregion
@@ -393,7 +432,10 @@ namespace VFS.Server.Core.FS.Impl
         /// <exception cref="FSException"></exception>
         public Response Print(CommandContext context)
         {
-            return Response.Success(representAsString(context.User.CurrentDirectory.Root, 0), false);
+            lock (_syncCommand)
+            {
+                return Response.Success(representAsString(context.User.CurrentDirectory.Root, 0), false);
+            }
         }
 
         /// <summary>
@@ -447,14 +489,14 @@ namespace VFS.Server.Core.FS.Impl
         private IDirectory findParentDirectory(CommandContext context)
         {
             string filePath = context.Args[0];
+            string pathToParentDirectory = UpPath(filePath);
             if (IsAbsolutePath(filePath))
             {
-                string pathToParentDirectory = UpPath(filePath);
                 return FindDirectory(pathToParentDirectory, context.User.CurrentDirectory);
             }
             else
             {
-                return context.User.CurrentDirectory;
+                return FindDirectory(pathToParentDirectory, context.User.CurrentDirectory);
             }
         }
 
@@ -467,7 +509,7 @@ namespace VFS.Server.Core.FS.Impl
             path = RemoveOddSymbols(path);
             if (path.LastIndexOf(SEPARATOR) == -1)
             {
-                return path;
+                return String.Empty;
             }
             return path.Remove(path.LastIndexOf(SEPARATOR));
         }
@@ -566,6 +608,10 @@ namespace VFS.Server.Core.FS.Impl
         /// <returns><c>null</c> - if directory not finded</returns>
         private IDirectory findDirectoryInDirectory(string path, IDirectory place)
         {
+            if (path == String.Empty)
+            {
+                return place;
+            }
             string[] directoryNames = splitPath(path);
             foreach (string directoryName in directoryNames)
             {

@@ -5,7 +5,6 @@ using System.Text;
 using VFS.Server.Core.Commands;
 using VFS.Server.Core.FS;
 using VFS.Server.Core.FS.Impl;
-using VFS.Server.Core.Exceptions;
 using VFS.Server.Core.Contexts;
 
 namespace VFS.Server.Core

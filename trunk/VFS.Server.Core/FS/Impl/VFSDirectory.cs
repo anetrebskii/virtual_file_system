@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using VFS.Server.Core.Exceptions;
+using System.IO;
 
 namespace VFS.Server.Core.FS.Impl
 {
@@ -107,11 +107,11 @@ namespace VFS.Server.Core.FS.Impl
         {
             if (_directories.Exists(d => d.Name.EqualByOrdinalIgnoreCase(file.Name)))
             {
-                throw new FSException("Директория с данным именем уже существует");
+                throw new IOException("Директория с данным именем уже существует");
             }
             if (_files.Exists(f => f.Name.EqualByOrdinalIgnoreCase(file.Name)))
             {
-                throw new FSException("Файл с данным именем уже существует");
+                throw new IOException("Файл с данным именем уже существует");
             }
             file.Directory = this;
             _files.Add(file);
@@ -139,11 +139,11 @@ namespace VFS.Server.Core.FS.Impl
         {
             if (_directories.Exists(d => d.Name.EqualByOrdinalIgnoreCase(directory.Name)))
             {
-                throw new FSException("Директория с данным именем уже существует");
+                throw new IOException("Директория с данным именем уже существует");
             }
             if (_files.Exists(f => f.Name.EqualByOrdinalIgnoreCase(directory.Name)))
             {
-                throw new FSException("Файл с данным именем уже существует");
+                throw new IOException("Файл с данным именем уже существует");
             }
             ((VFSDirectory)directory).Parent = this;
             ((VFSDirectory)directory).Root = this.Root;

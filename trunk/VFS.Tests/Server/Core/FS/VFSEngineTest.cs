@@ -8,7 +8,6 @@ using VFS.Server.Core.FS.Impl;
 using VFS.Server.Core.Commands;
 using FluentAssertions;
 using System.IO;
-using VFS.Server.Core.Exceptions;
 using VFS.Server.Core.Contexts;
 
 namespace VFS.Tests.Server.Core.FS
@@ -133,14 +132,16 @@ namespace VFS.Tests.Server.Core.FS
         #region RD Command
 
         [TestMethod]
-        [ExpectedException(typeof(FSException))]
         public void DontRemoveDir_WithChildDirectories()
         {
             // Arrange            
             _context.Args = new string[] { _child1Directory.Name };
 
             // Act
-            _engine.RemoveDirectory(_context);
+            Response actualResult = _engine.RemoveDirectory(_context);
+
+            // Assert
+            Assert.IsFalse(actualResult.IsSuccess);
         }
 
         [TestMethod]

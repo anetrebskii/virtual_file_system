@@ -19,6 +19,7 @@ namespace VFS.Client
         /// <param name="msg">message from server</param>
         public void Receive(string msg)
         {
+            Console.WriteLine();
             Console.WriteLine(msg);
         }
 

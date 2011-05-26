@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using VFS.Server.Core.Commands;
-using VFS.Server.Core.Exceptions;
 using VFS.Server.Core.Contexts;
 
 namespace VFS.Server.Core.FS
