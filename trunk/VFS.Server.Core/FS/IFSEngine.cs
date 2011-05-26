@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using VFS.Server.Core.Commands;
 using VFS.Server.Core.Exceptions;
+using VFS.Server.Core.Contexts;
 
 namespace VFS.Server.Core.FS
 {
@@ -22,76 +23,76 @@ namespace VFS.Server.Core.FS
         /// </summary>
         /// <param name="context">context for command</param>
         /// <exception cref="FSException"></exception>
-        void CreateDirectory(CommandContext context);
+        Response CreateDirectory(CommandContext context);
 
         /// <summary>
         /// Remove directory from file system
         /// </summary>   
         /// <param name="context">context for command</param>
         /// <exception cref="FSException"></exception>
-        void RemoveDirectory(CommandContext context);
+        Response RemoveDirectory(CommandContext context);
 
         /// <summary>
         /// Remove directory with child directories
         /// </summary>
         /// <param name="context">context for command</param>
         /// <exception cref="FSException"></exception>
-        void RemoveTree(CommandContext context);
+        Response RemoveTree(CommandContext context);
 
         /// <summary>
         /// Navigate to another directory
         /// </summary>
         /// <param name="context">context for command</param>
         /// <exception cref="FSException"></exception>
-        void Navigate(CommandContext context);
+        Response Navigate(CommandContext context);
 
         /// <summary>
         /// Create new file in file system
         /// </summary>
         /// <param name="context">context for command</param>
         /// <exception cref="FSException"></exception>
-        void CreateFile(CommandContext context);
+        Response CreateFile(CommandContext context);
 
         /// <summary>
         /// Remove file from file system
         /// </summary>
         /// <param name="context">context for command</param>
         /// <exception cref="FSException"></exception>
-        void RemoveFile(CommandContext context);
+        Response RemoveFile(CommandContext context);
 
         /// <summary>
         /// Lock file in file system
         /// </summary>
         /// <param name="context">context for command</param>
         /// <exception cref="FSException"></exception>
-        void LockFile(CommandContext context);
+        Response LockFile(CommandContext context);
 
         /// <summary>
         /// Unlock file in file system
         /// </summary>
         /// <param name="context">context for command</param>
         /// <exception cref="FSException"></exception>
-        void UnlockFile(CommandContext context);
+        Response UnlockFile(CommandContext context);
 
         /// <summary>
         /// Move file or directory to other directory in file system
         /// </summary>
         /// <param name="context">context for command</param>
         /// <exception cref="FSException"></exception>
-        void Move(CommandContext context);
+        Response Move(CommandContext context);
 
         /// <summary>
         /// Copy file or directory to other directory in file system
         /// </summary>
         /// <param name="context">context for command</param>
         /// <exception cref="FSException"></exception>
-        void Copy(CommandContext context);
+        Response Copy(CommandContext context);
 
         /// <summary>
         /// Print data in file system
         /// </summary>
         /// <param name="context">context for command</param>
         /// <exception cref="FSException"></exception>
-        void Print(CommandContext context);
+        Response Print(CommandContext context);
     }
 }

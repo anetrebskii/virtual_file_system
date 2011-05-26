@@ -30,6 +30,8 @@ namespace VFS.Server.Core.FS.Impl
             Root = this;
         }
 
+        public volatile int CountUsers;
+
         #region IDirectory Members
 
         /// <summary>

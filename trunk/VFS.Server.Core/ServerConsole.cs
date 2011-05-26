@@ -6,6 +6,7 @@ using VFS.Server.Core.Commands;
 using VFS.Server.Core.FS;
 using VFS.Server.Core.FS.Impl;
 using VFS.Server.Core.Exceptions;
+using VFS.Server.Core.Contexts;
 
 namespace VFS.Server.Core
 {
@@ -26,7 +27,7 @@ namespace VFS.Server.Core
         /// <para></para>
         /// value - command handler
         /// </summary>
-        private Dictionary<string, Action<CommandContext>> _commands = new Dictionary<string, Action<CommandContext>>();
+        private Dictionary<string, Func<CommandContext, Response>> _commands = new Dictionary<string, Func<CommandContext, Response>>();
 
         /// <summary>
         /// Initialize instance of a class <see cref="ServerConsole"/>
@@ -77,40 +78,27 @@ namespace VFS.Server.Core
         /// <param name="user">command sender</param>
         /// <param name="otherUsers">users in system</param>
         /// <returns>Response after handle</returns>
-        public HandleResult HandleCommand(string textCommand, UserContext user, IEnumerable<UserContext> otherUsers)
+        public Response HandleCommand(string textCommand, UserContext user)
         {
             if (textCommand == null || textCommand.Trim() == String.Empty)
             {
-                return HandleResult.Empty;
+                return Response.Success(false);
             }
 
             string[] commandItems = textCommand.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
             string commandName = commandItems[0].ToUpper();
 
-            CommandContext commandContext = new CommandContext(user, otherUsers)
+            CommandContext commandContext = new CommandContext(user)
             {
                 Args = commandItems.Skip(1).ToArray()
             };
             try
             {
-                _commands[commandName].Invoke(commandContext);
-                return new HandleResult()
-                {
-                    Response = commandContext.Response,
-                    SystemChanged = commandContext.SystemChanged
-                };
-            }
-            catch (FewArgumentsException ex)
-            {
-                return new HandleResult() { Response = ex.Message };
-            }
-            catch (FSException ex)
-            {
-                return new HandleResult() { Response = ex.Message };
-            }
+                return _commands[commandName].Invoke(commandContext);
+            }           
             catch (KeyNotFoundException ex)
             {
-                return new HandleResult() { Response = "Указанная команда не найдена" };
+                return Response.Failed("Указанная команда не найдена");
             }
             catch (Exception)
             {

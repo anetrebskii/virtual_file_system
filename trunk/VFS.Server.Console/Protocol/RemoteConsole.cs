@@ -7,6 +7,7 @@ using System.ServiceModel;
 using VFS.Server.Core.Commands;
 using VFS.Server.Core;
 using System.Security.Authentication;
+using VFS.Server.Core.Contexts;
 
 namespace VFS.Server.Console.Protocol
 {
@@ -77,7 +78,7 @@ namespace VFS.Server.Console.Protocol
         /// <returns>Respoinse from server</returns>
         public string SendCommand(string command)
         {
-            HandleResult handleResult = _console.HandleCommand(command, _currentUser.Context, _connectedUsers.Select(u => u.Context));
+            Response handleResult = _console.HandleCommand(command, _currentUser.Context);
             if (handleResult.SystemChanged)
             {
                 _connectedUsers.ForEach(u =>
@@ -89,7 +90,7 @@ namespace VFS.Server.Console.Protocol
                         }
                     });
             }
-            return handleResult.Response;
+            return handleResult.Text;
         }
 
         #endregion

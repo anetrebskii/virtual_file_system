@@ -57,7 +57,7 @@ namespace VFS.Tests.Server.Core
         [TestMethod]
         public void Console_ParseCommand()
         {
-            _serverConsole.HandleCommand("CD C:\\word", _userContext, CommandHelper._users);
+            _serverConsole.HandleCommand("CD C:\\word", _userContext);
             _engineMock.Verify(s => s.Navigate(It.Is<CommandContext>(c => c.Args.Length == 1 && c.Args[0] == "C:\\word")));
         }
     }

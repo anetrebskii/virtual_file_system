@@ -11,12 +11,10 @@ namespace VFS.Tests.Server.Core
 {
     sealed class CommandHelper
     {
-        public static List<UserContext> _users = new List<UserContext>();
-
         public static CommandContext CreateCommandContext()
         {
             UserContext currentUser = new UserContext("name");
-            CommandContext returnValue = new CommandContext(currentUser, _users);
+            CommandContext returnValue = new CommandContext(currentUser);
             returnValue.User.CurrentDirectory = CreateDirectory(@"C:");
             return returnValue;
         }

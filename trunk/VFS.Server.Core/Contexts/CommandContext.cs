@@ -22,21 +22,6 @@ namespace VFS.Server.Core.Commands
         public UserContext User { get; set; }
 
         /// <summary>
-        /// Answer from system to user
-        /// </summary>
-        public string Response { get; set; }
-
-        /// <summary>
-        /// Represent information about that system changed after handle command
-        /// </summary>
-        public bool SystemChanged { get; set; }
-
-        /// <summary>
-        /// Keep common information
-        /// </summary>
-        public IEnumerable<UserContext> OtherUsers { get; private set; }
-
-        /// <summary>
         /// Initialize new instance of class <see cref="CommandContext"/>
         /// </summary>
         /// <param name="user">User, who execute command</param>
@@ -45,18 +30,13 @@ namespace VFS.Server.Core.Commands
         /// <exception cref="ArgumentNullException">
         /// if <paramref name="user"/> or <paramref name="otherUsers"/> is null
         /// </exception>
-        public CommandContext(UserContext user, IEnumerable<UserContext> otherUsers)
+        public CommandContext(UserContext user)
         {
             if (user == null)
             {
                 throw new ArgumentNullException("user");
             }
-            if (otherUsers == null)
-            {
-                throw new ArgumentNullException("otherUsers");
-            }
             User = user;
-            OtherUsers = otherUsers;
         }
     }
 }

@@ -9,6 +9,7 @@ using VFS.Server.Core.Commands;
 using FluentAssertions;
 using System.IO;
 using VFS.Server.Core.Exceptions;
+using VFS.Server.Core.Contexts;
 
 namespace VFS.Tests.Server.Core.FS
 {
@@ -460,10 +461,10 @@ namespace VFS.Tests.Server.Core.FS
             _file1.LockedUsers.Add("user");
             
             // Act
-            _engine.Print(_context);
+            Response actualResult = _engine.Print(_context);
 
             // Assert
-            Assert.AreEqual(PrintResults.ExpectedResult, _context.Response);
+            Assert.AreEqual(PrintResults.ExpectedResult, actualResult.Text);
         }
 
         #endregion
