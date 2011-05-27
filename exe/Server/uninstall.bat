@@ -1,1 +1,1 @@
-C:\WINDOWS\Microsoft.NET\Framework\v2.0.50727\InstallUtil.exe NetLeon.ICQBot.Host.Service.exe /u
+C:\WINDOWS\Microsoft.NET\Framework\v2.0.50727\InstallUtil.exe VFS.Server.WinService.exe /u
