@@ -36,9 +36,12 @@ namespace VFS.Client
             }
         }
 
+        /// <summary>
+        /// Handle unhandled exceptions
+        /// </summary>
         static void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
         {
-            System.IO.File.WriteAllText("loh.txt", ((Exception)e.ExceptionObject).StackTrace + ((Exception)e.ExceptionObject).Message);
+            //TODO: Log
         }
 
         /// <summary>
@@ -62,6 +65,11 @@ namespace VFS.Client
                     serverResponse = remoteConsole.SendCommand(command);
                 }
                 catch (CommunicationObjectFaultedException ex)
+                {
+                    Console.WriteLine("Соединение с сервером потеряно");
+                    break;
+                }
+                catch (ProtocolException ex)
                 {
                     Console.WriteLine("Соединение с сервером потеряно");
                     break;
@@ -113,17 +121,17 @@ namespace VFS.Client
                 AuthenticationResult authenticateSuccess = remoteConsole.Authenticate(connectionData.UserName);
                 if (authenticateSuccess.IsSuccess)
                 {
-                    Console.WriteLine("Count connected users, without you: {0}", authenticateSuccess.CountAuthenticatedUsers);
+                    Console.WriteLine("Количесто уже подключенных пользователей: {0}", authenticateSuccess.CountAuthenticatedUsers);
                     return remoteConsole;
                 }
                 else
                 {
-                    Console.WriteLine("Authentication was fail");
+                    Console.WriteLine("Ошибка при аутентификации");
                 }
             }
             catch (EndpointNotFoundException ex)
             {
-                Console.WriteLine("Server with this address not found");
+                Console.WriteLine("Сервер с данным адресом не был найден");
             }
             return null;
         }

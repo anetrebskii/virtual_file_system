@@ -63,7 +63,14 @@ namespace VFS.Server.Core.FS.Impl
                 }
                 string directoryName = Path.GetFileName(directoryPath);
                 IDirectory newDirectory = new VFSDirectory { Name = directoryName };
-                parentDirectory.AddDirectory(newDirectory);
+                try
+                {
+                    parentDirectory.AddDirectory(newDirectory);
+                }
+                catch (IOException)
+                {
+                    return Response.Failed("Файл или директория с таким именем уже существует");
+                }
                 return Response.Success(true);
             }
         }
@@ -177,7 +184,14 @@ namespace VFS.Server.Core.FS.Impl
                     return Response.Failed("Не найдена директория для создания файла");
                 }
                 string newFileName = Path.GetFileName(filePath);
-                parentDirectory.AddFile(new VFSFile() { Name = newFileName });
+                try
+                {
+                    parentDirectory.AddFile(new VFSFile() { Name = newFileName });
+                }
+                catch (IOException)
+                {
+                    return Response.Failed("Файл или директория с таким именем уже существует");
+                }
                 return Response.Success(true);
             }
         }
@@ -227,10 +241,10 @@ namespace VFS.Server.Core.FS.Impl
             {
                 return Response.Failed("1 аргумент - путь к файлу");
             }
-            string pathToDelete = context.Args[0];
+            string pathToFile = context.Args[0];
             lock (_syncCommand)
             {
-                IFile file = FindFile(pathToDelete, context.User.CurrentDirectory);
+                IFile file = FindFile(pathToFile, context.User.CurrentDirectory);
                 if (file == null)
                 {
                     return Response.Failed("Не найден файл для блокировки");
@@ -340,8 +354,19 @@ namespace VFS.Server.Core.FS.Impl
                     {
                         return Response.Failed("Не найден объект для перемещения");
                     }
+                    if (sourceFile.LockedUsers.Count > 0)
+                    {
+                        return Response.Failed("Нельзя переместить заблокированный файл");
+                    }
                     sourceFile.Directory.RemoveFile(sourceFile);
-                    destDirectory.AddFile(sourceFile);
+                    try
+                    {
+                        destDirectory.AddFile(sourceFile);
+                    }
+                    catch (IOException)
+                    {
+                        return Response.Failed("Файл или директория с таким именем уже существует");
+                    }
                 }
                 else
                 {
@@ -362,7 +387,14 @@ namespace VFS.Server.Core.FS.Impl
                         return Response.Failed("Невозможно переместить директорию, т.к. она или ее поддиректории используется другими пользователями");
                     }
                     sourceDirectory.Parent.RemoveDirectory(sourceDirectory);
-                    destDirectory.AddDirectory(sourceDirectory);
+                    try
+                    {
+                        destDirectory.AddDirectory(sourceDirectory);
+                    }
+                    catch (IOException)
+                    {
+                        return Response.Failed("Файл или директория с таким именем уже существует");
+                    }
                 }
                 return Response.Success(true);
             }
@@ -395,8 +427,20 @@ namespace VFS.Server.Core.FS.Impl
                 if (sourceDirectory == null)
                 {
                     IFile sourceFile = FindFile(sourcePath, context.User.CurrentDirectory);
+                    if (sourceFile == null)
+                    {
+                        return Response.Failed("Не найден объект для перемещения");
+                    }
                     IFile copiedFile = (IFile)sourceFile.DeepCopy();
-                    destDirectory.AddFile(copiedFile);
+                    copiedFile.LockedUsers.Clear();
+                    try
+                    {
+                        destDirectory.AddFile(copiedFile);
+                    }
+                    catch (IOException)
+                    {
+                        return Response.Failed("Файл или директория с таким именем уже существует");
+                    }
                 }
                 else
                 {
@@ -405,7 +449,15 @@ namespace VFS.Server.Core.FS.Impl
                         return Response.Failed("Нельзя скопировать корневую директорию");
                     }
                     IDirectory copiedDirectory = (IDirectory)sourceDirectory.DeepCopy();
-                    destDirectory.AddDirectory(copiedDirectory);
+                    copiedDirectory.DeepForEach(d => d.GetDirectories(), d => d.GetFiles().ForEach(f => f.LockedUsers.Clear()));
+                    try
+                    {
+                        destDirectory.AddDirectory(copiedDirectory);
+                    }
+                    catch (IOException)
+                    {
+                        return Response.Failed("Файл или директория с таким именем уже существует");
+                    }
                 }
                 return Response.Success(true);
             }
@@ -562,7 +614,7 @@ namespace VFS.Server.Core.FS.Impl
         private IFile findFileInDirectory(string path, IDirectory place)
         {
             string[] directoryNames = splitPath(path);
-            foreach (string directoryName in directoryNames.Take(directoryNames.Length - 2))
+            foreach (string directoryName in directoryNames.Take(directoryNames.Length - 1))
             {
                 IDirectory findedDirectory = place.GetDirectories().FirstOrDefault(d =>
                     String.Compare(d.Name, directoryName, StringComparison.OrdinalIgnoreCase) == 0);

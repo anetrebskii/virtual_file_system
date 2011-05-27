@@ -12,6 +12,101 @@ namespace VFS.Server.Core.Extension
     static class ExtenstionMethods
     {
         /// <summary>
+        /// Perform specified action for each element in source
+        /// </summary>
+        /// <typeparam name="T">Type of elements</typeparam>
+        /// <param name="source">Elements to search</param>
+        /// <param name="selector">Define condition to extract child elements</param>
+        /// 
+        /// <exception cref="NullReferenceException">if <paramref name="source"/> is null</exception>
+        /// <exception cref="ArgumentNullException">
+        /// if <paramref name="selector"/> or <paramref name="predicate"/> is null
+        /// </exception>
+        public static void ForEach<T>(this IEnumerable<T> source, Action<T> action)
+        {
+            if (source == null)
+            {
+                throw new NullReferenceException();
+            }
+            if (action == null)
+            {
+                throw new ArgumentNullException("predicate");
+            }
+
+            foreach (T item in source)
+            {
+                action(item);
+            }
+        }
+
+        /// <summary>
+        /// Perform specified action for each element in source and childs contain elements,
+        /// </summary>
+        /// <typeparam name="T">Type of elements</typeparam>
+        /// <param name="source">Elements to search</param>
+        /// <param name="selector">Define condition to extract child elements</param>
+        /// <param name="action">Specified action</param>
+        /// 
+        /// <exception cref="NullReferenceException">if <paramref name="source"/> is null</exception>
+        /// <exception cref="ArgumentNullException">
+        /// if <paramref name="selector"/> or <paramref name="predicate"/> is null
+        /// </exception>
+        public static void DeepForEach<T>(this IEnumerable<T> source,
+                                     Func<T, IEnumerable<T>> selector, Action<T> action)
+        {
+            if (source == null)
+            {
+                throw new NullReferenceException();
+            }
+            if (selector == null)
+            {
+                throw new ArgumentNullException("selector");
+            }
+            if (action == null)
+            {
+                throw new ArgumentNullException("predicate");
+            }
+
+            foreach (T item in source)
+            {
+                action(item);
+                selector(item).DeepForEach(selector, action);
+            }
+        }
+
+        /// <summary>
+        /// Perform specified action for each element in source and childs contain elements,
+        /// </summary>
+        /// <typeparam name="T">Type of elements</typeparam>
+        /// <param name="source">Elements to search</param>
+        /// <param name="selector">Define condition to extract child elements</param>
+        /// <param name="action">Specified action</param>
+        /// 
+        /// <exception cref="NullReferenceException">if <paramref name="source"/> is null</exception>
+        /// <exception cref="ArgumentNullException">
+        /// if <paramref name="selector"/> or <paramref name="predicate"/> is null
+        /// </exception>
+        public static void DeepForEach<T>(this T source,
+                                     Func<T, IEnumerable<T>> selector, Action<T> action)
+        {
+            if (source == null)
+            {
+                throw new NullReferenceException();
+            }
+            if (selector == null)
+            {
+                throw new ArgumentNullException("selector");
+            }
+            if (action == null)
+            {
+                throw new ArgumentNullException("predicate");
+            }
+            action(source);
+            selector(source).DeepForEach(selector, action);
+        }
+
+
+        /// <summary>
         /// Compare string values in ordinal and ignore case
         /// </summary>
         /// <param name="value1">value 1 for compare</param>
