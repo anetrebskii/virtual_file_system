@@ -4,9 +4,9 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using VFS.Server.Core;
+using VFS.Server.Core.Contexts;
 using VFS.Server.Core.FS;
 using Moq;
-using VFS.Server.Core.Commands;
 
 namespace VFS.Tests.Server.Core
 {

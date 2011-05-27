@@ -1,11 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
 
-namespace VFS.Server.Core
+namespace VFS.Server.Core.Extension
 {
     /// <summary>
     /// Contain extention methods
@@ -38,7 +37,7 @@ namespace VFS.Server.Core
         /// if <paramref name="selector"/> or <paramref name="predicate"/> is null
         /// </exception>
         public static bool Exists<T>(this IEnumerable<T> source,
-            Func<T, IEnumerable<T>> selector, Func<T, bool> predicate)
+                                     Func<T, IEnumerable<T>> selector, Func<T, bool> predicate)
         {
             if (source == null)
             {
@@ -77,7 +76,7 @@ namespace VFS.Server.Core
         /// if <paramref name="selector"/> or <paramref name="predicate"/> is null
         /// </exception>
         public static bool Exists<T>(this T source,
-            Func<T, IEnumerable<T>> selector, Func<T, bool> predicate)
+                                     Func<T, IEnumerable<T>> selector, Func<T, bool> predicate)
         {
             if (source == null)
             {

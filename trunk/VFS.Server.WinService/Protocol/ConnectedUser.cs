@@ -1,7 +1,7 @@
 ﻿using VFS.Common;
 using VFS.Server.Core.Contexts;
 
-namespace VFS.Server.Console.Protocol
+namespace VFS.Server.WinService.Protocol
 {
     /// <summary>
     /// Represent connected user

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.ServiceModel;
 
-namespace VFS.Contract
+namespace VFS.Common
 {
     /// <summary>
     /// Represent authentication result
@@ -38,10 +38,10 @@ namespace VFS.Contract
         public static AuthenticationResult Success(int countAuthenticatedUsers)
         {
             return new AuthenticationResult() 
-            { 
-                CountAuthenticatedUsers = countAuthenticatedUsers,
-                IsSuccess = true
-            };
+                       { 
+                           CountAuthenticatedUsers = countAuthenticatedUsers,
+                           IsSuccess = true
+                       };
         }
 
         /// <summary>
@@ -52,9 +52,9 @@ namespace VFS.Contract
         public static AuthenticationResult Failed()
         {
             return new AuthenticationResult() 
-            { 
-                CountAuthenticatedUsers = -1 
-            };
+                       { 
+                           CountAuthenticatedUsers = -1 
+                       };
         }
     }
 }

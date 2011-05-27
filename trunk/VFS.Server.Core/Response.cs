@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace VFS.Server.Core.Contexts
+namespace VFS.Server.Core
 {
     /// <summary>
     /// Represent handle result 

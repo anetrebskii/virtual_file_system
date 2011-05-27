@@ -8,8 +8,8 @@
     <ProjectGuid>{D5351D28-1933-4787-ADDC-B8968300833E}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>VFS.Contract</RootNamespace>
-    <AssemblyName>VFS.Contract</AssemblyName>
+    <RootNamespace>VFS.Common</RootNamespace>
+    <AssemblyName>VFS.Common</AssemblyName>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>

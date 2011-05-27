@@ -1,10 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using VFS.Server.Core.FS;
 
-namespace VFS.Server.Core.Commands
+namespace VFS.Server.Core.Contexts
 {
     /// <summary>
     /// Context for execute user command
@@ -25,10 +21,9 @@ namespace VFS.Server.Core.Commands
         /// Initialize new instance of class <see cref="CommandContext"/>
         /// </summary>
         /// <param name="user">User, who execute command</param>
-        /// <param name="otherUsers">Other users</param>
         /// 
         /// <exception cref="ArgumentNullException">
-        /// if <paramref name="user"/> or <paramref name="otherUsers"/> is null
+        /// if <paramref name="user"/> is null
         /// </exception>
         public CommandContext(UserContext user)
         {

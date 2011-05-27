@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.IO;
+using VFS.Server.Core.Extension;
 
 namespace VFS.Server.Core.FS.Impl
 {
@@ -15,12 +15,12 @@ namespace VFS.Server.Core.FS.Impl
         /// <summary>
         /// Child directories <see cref="IDirectory"/>
         /// </summary>
-        private List<VFSDirectory> _directories = new List<VFSDirectory>();
+        private readonly List<VFSDirectory> _directories = new List<VFSDirectory>();
 
         /// <summary>
         /// Child files <see cref="IFile"/>
         /// </summary>
-        private List<IFile> _files = new List<IFile>();
+        private readonly List<IFile> _files = new List<IFile>();
 
         /// <summary>
         /// Initialize new instance of class <see cref="VFSDirectory"/>
@@ -100,8 +100,8 @@ namespace VFS.Server.Core.FS.Impl
         /// </summary>
         /// <param name="file">file to add</param>
         /// 
-        /// <exception cref="FSException">
-        /// If already exists file or directory with name of the new file <paramref name="directory"/>
+        /// <exception cref="IOException">
+        /// If already exists file or directory with name of the new file <paramref name="file"/>
         /// </exception>
         public void AddFile(IFile file)
         {
@@ -132,7 +132,7 @@ namespace VFS.Server.Core.FS.Impl
         /// </summary>
         /// <param name="directory">directory to add</param>
         /// 
-        /// <exception cref="FSException">
+        /// <exception cref="IOException">
         /// If already exists file or directory with name of the new directory <paramref name="directory"/>
         /// </exception>
         public void AddDirectory(IDirectory directory)

@@ -2,11 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using VFS.Server.Core.Commands;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
 using VFS.Server.Core.Contexts;
 using System.Threading;
+using VFS.Server.Core.Extension;
 
 namespace VFS.Server.Core.FS.Impl
 {
@@ -23,12 +23,12 @@ namespace VFS.Server.Core.FS.Impl
         /// <summary>
         /// Root directory
         /// </summary>
-        private IDirectory _rootDirectory = new VFSDirectory() { Name = "C:" };
+        private readonly IDirectory _rootDirectory = new VFSDirectory() { Name = "C:" };
 
         /// <summary>
         /// Object to syncronize commands execution
         /// </summary>
-        private object _syncCommand = new object();
+        private readonly object _syncCommand = new object();
 
         /// <summary>
         /// Return default directory for this file system
@@ -47,7 +47,6 @@ namespace VFS.Server.Core.FS.Impl
         /// Create new directory in file system
         /// </summary>
         /// <param name="context">context for command</param>
-        /// <exception cref="FSException"></exception>
         public Response CreateDirectory(CommandContext context)
         {
             if (!hasOneParameter(context.Args))
@@ -77,7 +76,6 @@ namespace VFS.Server.Core.FS.Impl
         /// Remove directory from file system
         /// </summary>   
         /// <param name="context">context for command</param>
-        /// <exception cref="FSException"></exception>
         public Response RemoveDirectory(CommandContext context)
         {
             if (!hasOneParameter(context.Args))
@@ -121,7 +119,6 @@ namespace VFS.Server.Core.FS.Impl
         /// Remove directory with child directories
         /// </summary>
         /// <param name="context">context for command</param>
-        /// <exception cref="FSException"></exception>
         public Response RemoveTree(CommandContext context)
         {
             if (!hasOneParameter(context.Args))
@@ -165,7 +162,6 @@ namespace VFS.Server.Core.FS.Impl
         /// Create new file in file system
         /// </summary>
         /// <param name="context">context for command</param>
-        /// <exception cref="FSException"></exception>
         public Response CreateFile(CommandContext context)
         {
             if (!hasOneParameter(context.Args))
@@ -194,7 +190,6 @@ namespace VFS.Server.Core.FS.Impl
         /// Remove file from file system
         /// </summary>
         /// <param name="context">context for command</param>
-        /// <exception cref="FSException"></exception>
         public Response RemoveFile(CommandContext context)
         {
             if (!hasOneParameter(context.Args))
@@ -226,7 +221,6 @@ namespace VFS.Server.Core.FS.Impl
         /// Lock file in file system
         /// </summary>
         /// <param name="context">context for command</param>
-        /// <exception cref="FSException"></exception>
         public Response LockFile(CommandContext context)
         {
             if (!hasOneParameter(context.Args))
@@ -257,7 +251,6 @@ namespace VFS.Server.Core.FS.Impl
         /// Unlock file in file system
         /// </summary>
         /// <param name="context">context for command</param>
-        /// <exception cref="FSException"></exception>
         public Response UnlockFile(CommandContext context)
         {
             if (!hasOneParameter(context.Args))
@@ -288,7 +281,6 @@ namespace VFS.Server.Core.FS.Impl
         /// Navigate to another directory
         /// </summary>
         /// <param name="context">context for command</param>
-        /// <exception cref="FSException"></exception>
         public Response Navigate(CommandContext context)
         {
             if (!hasOneParameter(context.Args))
@@ -324,7 +316,6 @@ namespace VFS.Server.Core.FS.Impl
         /// Move file or directory to other directory in file system
         /// </summary>
         /// <param name="context">context for command</param>
-        /// <exception cref="FSException"></exception>
         public Response Move(CommandContext context)
         {
             if (!hasTwoParameters(context.Args))
@@ -385,7 +376,6 @@ namespace VFS.Server.Core.FS.Impl
         /// Copy file or directory to other directory in file system
         /// </summary>
         /// <param name="context">context for command</param>
-        /// <exception cref="FSException"></exception>
         public Response Copy(CommandContext context)
         {
             if (!hasTwoParameters(context.Args))
@@ -429,7 +419,6 @@ namespace VFS.Server.Core.FS.Impl
         /// Print data in file system
         /// </summary>
         /// <param name="context">context for command</param>
-        /// <exception cref="FSException"></exception>
         public Response Print(CommandContext context)
         {
             lock (_syncCommand)
@@ -471,7 +460,7 @@ namespace VFS.Server.Core.FS.Impl
                     ? String.Format(" [LOCKED by {0}]", String.Join(",", file.LockedUsers.ToArray()))
                     : String.Empty;
                 returnValue.AppendFormat("{0}|_{1}", "| ".Repeat(deepLevel), file.Name + lockedInformation);
-            }            
+            }
             return returnValue.ToString();
         }
 
@@ -494,10 +483,7 @@ namespace VFS.Server.Core.FS.Impl
             {
                 return FindDirectory(pathToParentDirectory, context.User.CurrentDirectory);
             }
-            else
-            {
-                return FindDirectory(pathToParentDirectory, context.User.CurrentDirectory);
-            }
+            return FindDirectory(pathToParentDirectory, context.User.CurrentDirectory);
         }
 
         /// <summary>
@@ -526,16 +512,13 @@ namespace VFS.Server.Core.FS.Impl
             {
                 return findFileInDirectory(removeRootPath(filePath), currentDirectory.Root);
             }
-            else
-            {
-                return findFileInDirectory(filePath, currentDirectory);
-            }
+            return findFileInDirectory(filePath, currentDirectory);
         }
 
         /// <summary>
         /// Find directory in current directory
         /// </summary>
-        /// <param name="filePath">directory path</param>
+        /// <param name="directoryPath">directory path</param>
         /// <param name="currentDirectory">current directory</param>
         /// <returns><c>null</c> - if directory not found</returns>
         public IDirectory FindDirectory(string directoryPath, IDirectory currentDirectory)
@@ -548,10 +531,7 @@ namespace VFS.Server.Core.FS.Impl
                 }
                 return findDirectoryInDirectory(removeRootPath(directoryPath), currentDirectory.Root);
             }
-            else
-            {
-                return findDirectoryInDirectory(directoryPath, currentDirectory);
-            }
+            return findDirectoryInDirectory(directoryPath, currentDirectory);
         }
 
         /// <summary>
@@ -633,7 +613,7 @@ namespace VFS.Server.Core.FS.Impl
         /// <returns>Clear path, without odd symbols</returns>
         private string RemoveOddSymbols(string path)
         {
-            return path = path.Trim(' ', SEPARATOR);
+            return path.Trim(' ', SEPARATOR);
         }
 
         /// <summary>
@@ -651,7 +631,7 @@ namespace VFS.Server.Core.FS.Impl
         /// </summary>
         /// <param name="args">arguments</param>
         /// <returns><c>true</c> - one argument contain</returns>
-        protected static bool hasOneParameter(string[] args)
+        private static bool hasOneParameter(string[] args)
         {
             return args != null && args.Length > 0;
         }
@@ -661,7 +641,7 @@ namespace VFS.Server.Core.FS.Impl
         /// </summary>
         /// <param name="args">arguments</param>
         /// <returns><c>true</c> - two argument contain</returns>
-        protected static bool hasTwoParameters(string[] args)
+        private static bool hasTwoParameters(string[] args)
         {
             return args != null && args.Length > 1;
         }

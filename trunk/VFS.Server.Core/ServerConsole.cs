@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using VFS.Server.Core.Commands;
 using VFS.Server.Core.FS;
 using VFS.Server.Core.FS.Impl;
 using VFS.Server.Core.Contexts;
@@ -17,7 +16,7 @@ namespace VFS.Server.Core
         /// <summary>
         /// File system engine
         /// </summary>
-        private IFSEngine _engine;
+        private readonly IFSEngine _engine;
 
         /// <summary>
         /// Available commands
@@ -26,7 +25,8 @@ namespace VFS.Server.Core
         /// <para></para>
         /// value - command handler
         /// </summary>
-        private Dictionary<string, Func<CommandContext, Response>> _commands = new Dictionary<string, Func<CommandContext, Response>>();
+        private readonly Dictionary<string, Func<CommandContext, Response>> _commands 
+            = new Dictionary<string, Func<CommandContext, Response>>();
 
         /// <summary>
         /// Initialize instance of a class <see cref="ServerConsole"/>
@@ -75,7 +75,6 @@ namespace VFS.Server.Core
         /// </summary>
         /// <param name="textCommand">command in text format</param>
         /// <param name="user">command sender</param>
-        /// <param name="otherUsers">users in system</param>
         /// <returns>Response after handle</returns>
         public Response HandleCommand(string textCommand, UserContext user)
         {

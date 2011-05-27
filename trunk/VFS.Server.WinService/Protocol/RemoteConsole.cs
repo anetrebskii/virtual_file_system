@@ -4,7 +4,7 @@ using VFS.Common;
 using System.ServiceModel;
 using VFS.Server.Core;
 
-namespace VFS.Server.Console.Protocol
+namespace VFS.Server.WinService.Protocol
 {
     /// <summary>
     /// Represent remote console to work with file system
@@ -15,12 +15,12 @@ namespace VFS.Server.Console.Protocol
         /// <summary>
         /// All connected and authenticated users
         /// </summary>
-        private static readonly List<ConnectedUser> _connectedUsers = new List<ConnectedUser>();
+        private static readonly List<ConnectedUser> ConnectedUsers = new List<ConnectedUser>();
 
         /// <summary>
         /// Server console to handle user commands
         /// </summary>
-        private static readonly ServerConsole _console = new ServerConsole();
+        private static readonly ServerConsole ServerConsole = new ServerConsole();
 
         /// <summary>
         /// Current connected user
@@ -36,15 +36,15 @@ namespace VFS.Server.Console.Protocol
         /// <returns><c>true</c> - authentication success</returns>
         public AuthenticationResult Authenticate(string userName)
         {
-            if (_connectedUsers.Exists(u =>
-                String.Compare(u.Context.UserName, userName, StringComparison.OrdinalIgnoreCase) == 0))
+            if (ConnectedUsers.Exists(u =>
+                                      String.Compare(u.Context.UserName, userName, StringComparison.OrdinalIgnoreCase) == 0))
             {
                 return AuthenticationResult.Failed();
             }
             IConsoleCallback callback = OperationContext.Current.GetCallbackChannel<IConsoleCallback>();
-            _currentUser = new ConnectedUser(_console.Authenticate(userName), callback);
-            _connectedUsers.Add(_currentUser);
-            return AuthenticationResult.Success(_connectedUsers.Count - 1);
+            _currentUser = new ConnectedUser(ServerConsole.Authenticate(userName), callback);
+            ConnectedUsers.Add(_currentUser);
+            return AuthenticationResult.Success(ConnectedUsers.Count - 1);
         }
 
         /// <summary>
@@ -61,7 +61,7 @@ namespace VFS.Server.Console.Protocol
         /// </summary>
         public void Quite()
         {
-            _connectedUsers.Remove(_currentUser);
+            ConnectedUsers.Remove(_currentUser);
             _currentUser = null;
             //OperationContext.Current.Channel.Abort();
         }
@@ -73,17 +73,17 @@ namespace VFS.Server.Console.Protocol
         /// <returns>Respoinse from server</returns>
         public string SendCommand(string command)
         {
-            Response handleResult = _console.HandleCommand(command, _currentUser.Context);
+            Response handleResult = ServerConsole.HandleCommand(command, _currentUser.Context);
             if (handleResult.SystemChanged)
             {
-                _connectedUsers.ForEach(u =>
-                    {
-                        if (!ReferenceEquals(_currentUser, u))
-                        {
-                            u.Callback.Receive(
-                                String.Format("{0} performs command: {1}", _currentUser.Context.UserName, command));
-                        }
-                    });
+                ConnectedUsers.ForEach(u =>
+                                           {
+                                               if (!ReferenceEquals(_currentUser, u))
+                                               {
+                                                   u.Callback.Receive(
+                                                       String.Format("{0} performs command: {1}", _currentUser.Context.UserName, command));
+                                               }
+                                           });
             }
             return handleResult.Text;
         }
